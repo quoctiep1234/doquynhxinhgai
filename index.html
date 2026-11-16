@@ -1901,9 +1901,9 @@
                 <div id="wish-result">Mong điều ước đẹp đẽ ấy sẽ dần thành hiện thực. ✨</div>
             </div>
             <div id="wish-celebration" aria-live="polite"><h2>Chúc mừng nhé! ✨</h2><p>Điều ước đã được gửi đến những vì sao. Mong cậu luôn đủ dịu dàng để tin vào điều kỳ diệu, đủ can đảm để theo đuổi điều mình mong muốn — và một ngày nào đó, mỉm cười khi thấy ước mơ thành hiện thực.</p><p class="wish-user-text" id="wish-user-text"></p></div>
-            </div>
         </div>
-<div id="letter-overlay">
+
+        <div id="letter-overlay">
             <span id="close-letter" title="Đóng sách">×</span>
             <div id="book-container">
                 <button class="book-nav" id="prev-page" title="Trang trước">❮</button>
@@ -1969,9 +1969,10 @@
                     <button id="chat-send">Gửi</button>
                 </div>
             </div>
-            <img id="chat-avatar" src="anh/anhdoquynh.png" alt="Quỳnh" title="Bấm để trò chuyện!">
+            <img id="chat-avatar" src="anhdoquynh.png" alt="Quỳnh" title="Bấm để trò chuyện!">
         </div>
-<audio id="explosion-sound">
+
+        <audio id="explosion-sound">
             <source src="https://assets.mixkit.co/active_storage/sfx/2019/2019-84.wav" type="audio/mpeg">
         </audio>
     </div>
@@ -2011,7 +2012,7 @@
         ];
 
         // Lightweight star field for the loading scene.
-        for (let i = 0; i < 95; i++) {
+        for (let i = 0; i < 65; i++) {
             const star = document.createElement('div');
             star.className = 'loading-star';
             const size = Math.random() * 2 + .4;
@@ -2049,7 +2050,7 @@
 
         // Slow-moving stars
         const starsContainer = document.getElementById('gate-stars');
-        for (let i = 0; i < 180; i++) {
+        for (let i = 0; i < 110; i++) {
             const s = document.createElement('div');
             s.className = 'gate-star';
             const size = Math.random() * 2.2 + 0.35;
@@ -2137,16 +2138,13 @@
             const gate = document.getElementById('gate-screen');
             const collapse = document.getElementById('universe-collapse');
 
-            // Lock interaction immediately.
             gate.style.pointerEvents = 'none';
             collapse.classList.add('active');
 
-            // Make the light converge to the center before the universe opens.
             setTimeout(() => gate.classList.add('fade-out'), 260);
 
             setTimeout(() => {
                 gate.style.display = 'none';
-
                 document.getElementById('main-content').style.display = 'block';
                 initMainApp();
             }, 1450);
@@ -2169,22 +2167,14 @@
             }
 
             gateError.textContent = '';
-            // Reuse the universe loading screen as a transition from the birthday gate
-            // into the countdown/universe experience.
             const loading = document.getElementById('universe-loading');
             const loadingMessage = document.getElementById('loading-message');
-            const transitionMessages = [
-                'Đang xác nhận ngày sinh...',
-                'Đang mở cánh cổng vũ trụ...',
-                'Đang chuẩn bị những điều kỳ diệu...'
-            ];
             if (loading) {
                 loading.style.display = 'flex';
                 loading.style.opacity = '1';
                 loading.style.visibility = 'visible';
                 loading.setAttribute('aria-hidden', 'false');
                 loading.classList.remove('loading-complete');
-                if (loadingMessage) loadingMessage.textContent = 'Đang xác nhận ngày sinh của cậu...';
                 const transitionMessages = [
                     'Đây là tâm huyết của Quốc Tiệp, được tạo nên sau 23 ngày 11 giờ miệt mài thực hiện.',
                     'Từng chi tiết nhỏ đều được chuẩn bị bằng tất cả sự chân thành.',
@@ -2202,8 +2192,6 @@
                         }, 320);
                     }
                 }, 2700);
-                // Keep the loader covering the transition until the main scene is ready,
-                // so there is no white/blank flash between the gate and countdown.
                 openUniverse();
                 setTimeout(() => {
                     clearInterval(transitionTimer);
@@ -2235,8 +2223,8 @@
         }
 
         const photoURLs = [
-            "anh/anh1.png","anh/anh2.png","anh/anh3.png","anh/anh4.png","anh/anh5.png",
-            "anh/anh6.png","anh/anh7.png","anh/anh8.png","anh/anh9.png","anh/anh10.png"
+            "anh1.png","anh2.png","anh3.png","anh4.png","anh5.png",
+            "anh6.png","anh7.png","anh8.png","anh9.png","anh10.png"
         ];
 
         let currentState = 'SPHERE';
@@ -2268,8 +2256,8 @@
                 // ===== Deep space background =====
                 const bgGeometry = new THREE.SphereGeometry(500, 24, 16);
                 const bgCanvas = document.createElement('canvas');
-                bgCanvas.width = 2048;
-                bgCanvas.height = 1024;
+                bgCanvas.width = 1024;
+                bgCanvas.height = 512;
                 const bgCtx = bgCanvas.getContext('2d');
 
                 const bgGradient = bgCtx.createRadialGradient(
@@ -2282,10 +2270,10 @@
                 bgCtx.fillStyle = bgGradient;
                 bgCtx.fillRect(0, 0, bgCanvas.width, bgCanvas.height);
 
-                for (let i = 0; i < 2200; i++) {
+                for (let i = 0; i < 1400; i++) {
                     const x = Math.random() * bgCanvas.width;
                     const y = Math.random() * bgCanvas.height;
-                    const r = Math.random() * 1.35 + .15;
+                    const r = Math.random() * 1.2 + .15;
                     const a = Math.random() * .7 + .12;
                     bgCtx.fillStyle = `rgba(255,255,255,${a})`;
                     bgCtx.beginPath();
@@ -2401,7 +2389,7 @@
                 });
 
                 // ===== Particle dust around portal =====
-                const particleCount = 650;
+                const particleCount = 450;
                 const particlePositions = new Float32Array(particleCount * 3);
                 const particleSizes = new Float32Array(particleCount);
                 const particleColors = new Float32Array(particleCount * 3);
@@ -2493,7 +2481,6 @@
                     glyphGroup.add(sprite);
                 });
 
-                // Store animation references.
                 sphereScene.userData.portalGlow = portalGlow;
                 sphereScene.userData.portalShell = shell;
                 sphereScene.userData.portalCoreDot = coreDot;
@@ -2590,7 +2577,7 @@
             cinemaParticleCtx = cinemaParticleCanvas.getContext('2d');
             resizeCinemaParticles();
 
-            const count = Math.min(700, Math.max(260, Math.floor(window.innerWidth * window.innerHeight / 2600)));
+            const count = Math.min(500, Math.max(200, Math.floor(window.innerWidth * window.innerHeight / 3000)));
             cinemaParticleData = [];
 
             for (let i = 0; i < count; i++) {
@@ -2675,7 +2662,6 @@
             const flash = document.getElementById('cinema-flash');
             const shockwave = document.getElementById('cinema-shockwave');
 
-            // Hide the old Matrix layer completely; countdown is now cinematic.
             matrixCanvas.style.display = 'none';
             document.getElementById('center-container').style.display = 'none';
 
@@ -2684,7 +2670,6 @@
 
             initCinemaParticles();
 
-            // ===== 3 — silence + waiting universe =====
             status.innerText = 'VŨ TRỤ ĐANG CHỜ ĐỢI...';
             status.style.opacity = '1';
             number.classList.remove('show', 'shake');
@@ -2693,7 +2678,6 @@
 
             await cinemaWait(900);
 
-            // The dot starts trembling.
             core.style.transform = 'translate(-50%, -50%) scale(.7)';
             core.style.boxShadow =
                 '0 0 12px #fff, 0 0 35px rgba(251,113,133,1), 0 0 100px rgba(236,72,153,.8)';
@@ -2705,7 +2689,6 @@
             await cinemaWait(650);
             number.classList.remove('shake');
 
-            // ===== 2 — particles wake up =====
             status.innerText = '';
             document.getElementById('cinema-particles').style.opacity = '1';
 
@@ -2717,11 +2700,9 @@
             number.innerText = '2';
             number.classList.add('show', 'shake');
 
-            // Faster pulse.
             core.style.transform = 'translate(-50%, -50%) scale(1.1)';
             await cinemaWait(700);
 
-            // ===== 1 — full particle field =====
             number.classList.remove('show');
             await cinemaWait(140);
 
@@ -2729,13 +2710,11 @@
             number.classList.add('show', 'shake');
             core.style.transform = 'translate(-50%, -50%) scale(1.65)';
 
-            // Turn particles into an expanding star field.
             stopCinemaParticles();
             animateCinemaParticles('burst');
 
             await cinemaWait(750);
 
-            // ===== CHÚC MỪNG SINH NHẬT QUỲNH =====
             number.classList.remove('show');
             core.style.transform = 'translate(-50%, -50%) scale(2.5)';
             core.style.boxShadow =
@@ -2746,7 +2725,6 @@
             title.classList.add('show');
             await cinemaWait(1350);
 
-            // ===== BOOM =====
             flash.classList.remove('fire');
             shockwave.classList.remove('fire');
             void flash.offsetWidth;
@@ -2761,7 +2739,6 @@
 
             await cinemaWait(750);
 
-            // Transition into the existing galaxy stage.
             stopCinemaParticles();
             overlay.classList.remove('active');
 
@@ -2770,78 +2747,35 @@
                 title.classList.remove('show');
 
                 currentState = 'GALAXY';
+                setLuxuryChapter('galaxy');
                 const galaxy = document.getElementById('galaxy-container');
                 galaxy.style.display = 'block';
                 galaxy.style.opacity = '1';
                 initGalaxy2DEngine();
 
-                const controls = document.getElementById('main-controls');
                 const charContainer = document.getElementById('chat-character-container');
-                controls.style.display = 'flex';
-                charContainer.style.display = 'flex';
-                controls.style.opacity = '1';
-                charContainer.style.opacity = '1';
+                if (charContainer) {
+                    charContainer.style.display = 'flex';
+                    charContainer.style.opacity = '1';
+                }
 
                 setTimeout(spawnShootingStarThầnTốc, 6500);
 
                 setTimeout(() => {
                     const bubble = document.getElementById('thought-bubble');
-                    bubble.classList.add('show-thought');
-                    setTimeout(() => {
-                        bubble.classList.replace('show-thought', 'hide-thought');
-                    }, 4000);
+                    if (bubble) {
+                        bubble.classList.add('show-thought');
+                        setTimeout(() => {
+                            bubble.classList.replace('show-thought', 'hide-thought');
+                        }, 4000);
+                    }
                 }, 1000);
             }, 800);
         }
 
-        const finalEl = document.getElementById('final-text');
-        let charIndex = 0;
-        const message = "Chúc mừng sinh nhật To You!";
-        function typeWriterHappyBirthday() {
-            finalEl.style.display = 'block';
-            if (charIndex < message.length) { finalEl.innerHTML += message.charAt(charIndex); charIndex++; setTimeout(typeWriterHappyBirthday, 150); }
-            else { setTimeout(triggerSupernovaEffect, 1000); }
-        }
-
-        function triggerSupernovaEffect() {
-            const core = document.getElementById('supernova-core'), flash = document.getElementById('supernova-flash'), expSound = document.getElementById('explosion-sound');
-            core.style.display = 'block';
-            let scaleVal = 0, flicker = 0;
-            const coreInterval = setInterval(() => {
-                scaleVal += 0.5; core.style.transform = `translate(-50%, -50%) scale(${scaleVal})`;
-                core.style.opacity = (flicker % 2 === 0) ? '0.2' : '1'; flicker++;
-                if (scaleVal >= 16) {
-                    clearInterval(coreInterval);
-                    flash.style.display = 'block'; flash.style.opacity = '1';
-                    if (expSound) expSound.play().catch(e => console.log(e));
-                    core.style.display = 'none';
-                    setTimeout(() => {
-                        clearInterval(matrixInterval);
-                        document.getElementById('matrixCanvas').style.display = 'none'; document.getElementById('center-container').style.display = 'none';
-                        currentState = 'GALAXY';
-                        setLuxuryChapter('galaxy');
-                        const galaxy = document.getElementById('galaxy-container');
-                        galaxy.style.display = 'block'; galaxy.style.opacity = '1';
-                        initGalaxy2DEngine();
-                        const controls = document.getElementById('main-controls');
-                        const charContainer = document.getElementById('chat-character-container');
-                        controls.style.display = 'flex'; charContainer.style.display = 'flex';
-                        controls.style.opacity = '1'; charContainer.style.opacity = '1';
-                        setTimeout(spawnShootingStarThầnTốc, 6500);
-                        setTimeout(() => {
-                            const bubble = document.getElementById('thought-bubble');
-                            bubble.classList.add('show-thought');
-                            setTimeout(() => { bubble.classList.replace('show-thought', 'hide-thought'); }, 4000);
-                        }, 1000);
-                        setTimeout(() => { flash.style.opacity = '0'; setTimeout(() => { flash.style.display = 'none'; }, 400); }, 500);
-                    }, 150);
-                }
-            }, 30);
-        }
-
         const spaceCanvas = document.getElementById('spaceCanvas'); const sCtx = spaceCanvas.getContext('2d');
         const photosWrapper = document.getElementById('photos-wrapper');
-         const galaxyContainer = document.getElementById('galaxy-container');
+        const galaxyContainer = document.getElementById('galaxy-container');
         let spaceParticles = [], galaxyPhotoElements = [], galaxyAngleY = 0, galaxyTiltX = -0.1, isDraggingGalaxy = false, isGalaxyZoomed = false;
         let prevMousePosGalaxy = { x: 0, y: 0 }; const galaxyFov = 620;
 
@@ -2856,16 +2790,15 @@
 
         function createSpaceGalaxyData() {
             if (spaceParticles.length > 0) return;
-            for (let i = 0; i < 850; i++) {
+            for (let i = 0; i < 650; i++) {
                 const theta = Math.random() * Math.PI * 2, phi = Math.acos((Math.random() * 2) - 1);
-                const r = i < 500 ? 145 + Math.random() * 55 : 175 + Math.random() * 420;
+                const r = i < 380 ? 145 + Math.random() * 55 : 175 + Math.random() * 420;
                 const x = r * Math.sin(phi) * Math.cos(theta),
-                      y = i < 500 ? r * Math.sin(phi) * Math.sin(theta) : (Math.random() - 0.5) * 75,
+                      y = i < 380 ? r * Math.sin(phi) * Math.sin(theta) : (Math.random() - 0.5) * 75,
                       z = r * Math.cos(phi);
-                spaceParticles.push({ x, y, z, size: Math.random() * 1.7 + .35, twinkle: Math.random()*Math.PI*2, color: i < 500 ? (Math.random()>.18?'#FB7185':'#ffffff') : (Math.random() > 0.58 ? '#F9A8D4' : '#ffffff') });
+                spaceParticles.push({ x, y, z, size: Math.random() * 1.7 + .35, twinkle: Math.random()*Math.PI*2, color: i < 380 ? (Math.random()>.18?'#FB7185':'#ffffff') : (Math.random() > 0.58 ? '#F9A8D4' : '#ffffff') });
             }
-            // A stream of lightweight lanterns; each lantern cycles through the existing photos.
-            const lanternCount = 18;
+            const lanternCount = 16;
             for (let i = 0; i < lanternCount; i++) {
                 const url = photoURLs[i % photoURLs.length];
                 const frame = document.createElement('div');
@@ -2916,8 +2849,6 @@
                 return;
             }
 
-            // Cap the heavy 2D galaxy renderer around 30 FPS. Interaction stays responsive,
-            // while the browser avoids spending a full paint budget every 16 ms.
             galaxyAnimId = requestAnimationFrame(animateGalaxy2DEngine);
             if (now - lastGalaxyFrame < 32) return;
             lastGalaxyFrame = now;
@@ -2930,7 +2861,6 @@
             const cosY=Math.cos(galaxyAngleY), sinY=Math.sin(galaxyAngleY);
             const cosX=Math.cos(galaxyTiltX), sinX=Math.sin(galaxyTiltX);
 
-            // Deep-space particle field.
             sCtx.globalAlpha = 1;
             spaceParticles.forEach((p,i)=>{
                 const q=projectGalaxyPoint(p,cx,cy,cosY,sinY,cosX,sinX);
@@ -2943,7 +2873,6 @@
                 sCtx.arc(q.x,q.y,Math.max(.35,p.size*q.scale),0,Math.PI*2);
                 sCtx.fill();
 
-                // Trails are intentionally sparse.
                 if(i%14===0 && q.scale>.95){
                     const len=5+q.scale*10;
                     sCtx.globalAlpha=.045+Math.min(.07,q.scale*.02);
@@ -2957,7 +2886,6 @@
             });
             sCtx.globalAlpha=1;
 
-            // Fast upward lantern stream with subtle 3D depth, sway and rotation.
             const frameStep = Math.min(2, Math.max(.6, (now - (lastLanternFrame || now - 32)) / 32));
             lastLanternFrame = now;
             galaxyPhotoElements.forEach(p => {
@@ -3057,7 +2985,7 @@
                         const letterOverlay = document.getElementById('letter-overlay');
                         letterOverlay.style.display = 'flex';
                         setTimeout(() => letterOverlay.style.opacity = '1', 10);
-                        updateBookPosition();
+                        if (typeof window.syncBookPosition === 'function') window.syncBookPosition();
                         return;
                     }
 
@@ -3202,7 +3130,6 @@
                         const dx = t.clientX-touchStart.x;
                         const dy = t.clientY-touchStart.y;
                         const dt = Math.max(1,performance.now()-touchStart.time);
-                        // A deliberate swipe adds a small cinematic inertia kick.
                         if (Math.abs(dx)>55 && Math.abs(dx)>Math.abs(dy)*1.15 && dt<650) {
                             galaxyAngleY += Math.sign(dx)*0.20;
                         }
@@ -3226,6 +3153,7 @@
                 if (window.innerWidth <= 768) { theBook.style.transform = "translateX(0%)"; }
                 else { if (currentPage === 1) { theBook.style.transform = "translateX(0%)"; } else if (currentPage === maxPages) { theBook.style.transform = "translateX(100%)"; } else { theBook.style.transform = "translateX(50%)"; } }
             }
+            window.syncBookPosition = updateBookPosition;
             function goNextPage() {
                 if (currentPage === 1) { p1.classList.add('flipped'); updateZIndex(p1, 1); currentPage++; }
                 else if (currentPage === 2) { p2.classList.add('flipped'); updateZIndex(p2, 2); currentPage++; }
