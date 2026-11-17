@@ -168,17 +168,9 @@
             box-shadow: 0 0 10px #EC4899;
         }
 
-        .dot-1 {
-            animation: loadingDot1 2.8s linear infinite;
-        }
-
-        .dot-2 {
-            animation: loadingDot2 3.4s linear infinite;
-        }
-
-        .dot-3 {
-            animation: loadingDot3 4.1s linear infinite;
-        }
+        .dot-1 { animation: loadingDot1 2.8s linear infinite; }
+        .dot-2 { animation: loadingDot2 3.4s linear infinite; }
+        .dot-3 { animation: loadingDot3 4.1s linear infinite; }
 
         @keyframes loadingDot1 {
             from { transform: rotate(0deg) translateX(47px) rotate(0deg); }
@@ -604,7 +596,6 @@
         }
 
         #gate-btn:hover::before { left: 140%; }
-
         #gate-btn:active { transform: translateY(0) scale(.99); }
 
         .gate-footnote {
@@ -631,9 +622,7 @@
             background: rgba(1,0,5,.1);
         }
 
-        #universe-collapse.active {
-            display: block;
-        }
+        #universe-collapse.active { display: block; }
 
         .collapse-vortex {
             position: absolute;
@@ -681,9 +670,7 @@
         }
 
         /* ===== MAIN CONTENT (hidden initially) ===== */
-
         #main-content { display: none; }
-
 
         /* ===== CỔNG SINH NHẬT ===== */
         #sphere-3d-renderer-container {
@@ -863,35 +850,14 @@
         }
 
         @media (max-width: 768px) {
-            .portal-ui {
-                margin-top: -175px;
-            }
-            .portal-eyebrow {
-                font-size: .48rem;
-                letter-spacing: .34em;
-            }
-            .portal-title {
-                font-size: 2rem;
-            }
-            .portal-name {
-                font-size: 2.65rem;
-            }
-            .portal-subtitle {
-                font-size: .55rem;
-                letter-spacing: .18em;
-            }
-            .portal-symbol-top {
-                top: calc(50% - 250px);
-            }
-            .portal-hint {
-                bottom: 9%;
-                font-size: .48rem;
-                letter-spacing: .2em;
-                gap: 8px;
-            }
-            .portal-hint-line {
-                width: 25px;
-            }
+            .portal-ui { margin-top: -175px; }
+            .portal-eyebrow { font-size: .48rem; letter-spacing: .34em; }
+            .portal-title { font-size: 2rem; }
+            .portal-name { font-size: 2.65rem; }
+            .portal-subtitle { font-size: .55rem; letter-spacing: .18em; }
+            .portal-symbol-top { top: calc(50% - 250px); }
+            .portal-hint { bottom: 9%; font-size: .48rem; letter-spacing: .2em; gap: 8px; }
+            .portal-hint-line { width: 25px; }
         }
 
         /* ===== ORIGINAL CSS ===== */
@@ -922,7 +888,7 @@
             transition: box-shadow 0.3s;
         }
         .photo-frame:hover { box-shadow: 0 0 25px #FB7185; }
-        .photo-frame img { width: 100%; height: 100%; object-fit: cover; border-radius: 2px; }
+        .photo-frame img, .photo-frame video { width: 100%; height: 100%; object-fit: cover; border-radius: 2px; }
         .photo-frame.zoomed {
             position: fixed !important; top: 50% !important; left: 50% !important;
             width: 80vw !important; height: auto !important; max-width: 600px !important;
@@ -1000,6 +966,56 @@
         .cover-title { text-align: center; color: #EC4899; font-size: 2.5rem; margin-bottom: 20px; text-shadow: 0 0 15px #EC4899; line-height: 1.2; }
         .text-center { text-align: center; }
 
+        /* ===== MOBILE SINGLE-PAGE LETTER FIX ===== */
+        @media (max-width: 768px) {
+            #book-container { perspective: none; }
+            #book {
+                width: min(82vw, 340px);
+                min-width: unset;
+                height: 62vh;
+                max-height: 480px;
+                min-height: 360px;
+                transform-style: flat;
+                transform: none !important;
+            }
+            .paper {
+                position: static;
+                display: contents;
+                transform: none !important;
+                transform-style: flat;
+            }
+            .front, .back {
+                position: absolute;
+                inset: 0;
+                width: 100%;
+                height: 100%;
+                transform: none !important;
+                backface-visibility: visible;
+                border-radius: 16px;
+                border: 1.5px solid rgba(236, 72, 153, 0.7);
+                box-shadow: 0 12px 35px rgba(0, 0, 0, 0.75), inset 0 0 20px rgba(236, 72, 153, 0.12);
+                padding: 26px 22px 42px;
+                font-size: 1.25rem;
+                line-height: 1.55;
+                opacity: 0;
+                visibility: hidden;
+                pointer-events: none;
+                transition: opacity 0.32s ease, transform 0.32s ease;
+                overflow-y: auto;
+            }
+            .front.mobile-active, .back.mobile-active {
+                opacity: 1;
+                visibility: visible;
+                pointer-events: auto;
+                z-index: 10;
+            }
+            .cover-title { font-size: 1.95rem; }
+            .book-nav { width: 38px; height: 38px; font-size: 16px; }
+            #prev-page { left: 2%; }
+            #next-page { right: 2%; }
+            #close-letter { top: 12px; right: 18px; font-size: 34px; }
+        }
+
         #chat-character-container {
             position: fixed; bottom: 10px; right: 20px; z-index: 1500; display: none; flex-direction: column; align-items: flex-end; opacity: 0; transition: opacity 1s;
         }
@@ -1056,17 +1072,10 @@
             #instruction-text { font-size: .48rem; }
             .controls { right: auto; left: 20px; bottom: 20px; flex-direction: column; }
             .btn-circle { width: 50px; height: 50px; font-size: 20px; }
-            #book { width: 85vw; min-width: unset; height: 55vh; }
-            .front, .back { padding: 20px 15px; font-size: 1.2rem; }
-            .cover-title { font-size: 2rem; }
             #chat-avatar { width: 100px; }
             #chat-box { width: 220px; right: 0; }
             #thought-bubble { bottom: 130px; font-size: 22px; padding: 10px 15px; }
             #thought-bubble::after, #thought-bubble::before { right: 20px; }
-            .book-nav { width: 40px; height: 40px; font-size: 18px; }
-            #prev-page { left: 2%; }
-            #next-page { right: 2%; }
-            #close-letter { top: 10px; right: 20px; font-size: 35px; }
             .loading-kicker { font-size: .58rem; letter-spacing: .34em; }
             .loading-title { font-size: 1.35rem; letter-spacing: .11em; }
             .loading-orbit { width: 92px; height: 92px; margin-top: 28px; }
@@ -1089,10 +1098,7 @@
             pointer-events: none;
         }
 
-        #cinematic-countdown.active {
-            display: block;
-            opacity: 1;
-        }
+        #cinematic-countdown.active { display: block; opacity: 1; }
 
         .cinema-noise {
             position: absolute;
@@ -1324,16 +1330,9 @@
         }
 
         @media (max-width: 768px) {
-            .cinema-status {
-                top: 35%;
-                font-size: .46rem;
-                letter-spacing: .3em;
-            }
-            .cinema-letterbox {
-                height: 5vh;
-            }
+            .cinema-status { top: 35%; font-size: .46rem; letter-spacing: .3em; }
+            .cinema-letterbox { height: 5vh; }
         }
-
 
         /* ===== PREMIUM MEMORY GALAXY ===== */
         #galaxy-container { overflow: hidden; background:
@@ -1347,7 +1346,7 @@
         #photos-wrapper { z-index:4; perspective:1200px; }
         .photo-frame { width:clamp(108px,9vw,150px); height:clamp(78px,7vw,112px); padding:5px; border:1px solid rgba(255,255,255,.5); border-radius:10px; background:rgba(255,255,255,.10); backdrop-filter:blur(7px); -webkit-backdrop-filter:blur(7px); transform-origin:center; will-change:transform,filter,opacity; box-shadow:0 0 14px rgba(255,255,255,.12), 0 0 32px rgba(236,72,153,.12); transition:box-shadow .25s, border-color .25s; }
         .photo-frame::after { content:''; position:absolute; inset:-2px; border-radius:12px; border:1px solid rgba(251,113,133,.16); pointer-events:none; }
-        .photo-frame img { border-radius:6px; filter:saturate(1.05) contrast(1.04); }
+        .photo-frame img, .photo-frame video { border-radius:6px; filter:saturate(1.05) contrast(1.04); }
         .photo-frame:hover { border-color:rgba(255,150,210,.85); box-shadow:0 0 20px rgba(251,113,133,.55), 0 0 50px rgba(236,72,153,.22); }
         #galaxy-centerpiece { position:absolute; left:50%; top:50%; width:min(440px,70vw); height:min(440px,70vw); transform:translate(-50%,-50%); z-index:7; pointer-events:none; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; }
         #galaxy-centerpiece::before { content:''; position:absolute; width:48%; height:48%; border-radius:50%; background:radial-gradient(circle, rgba(251,113,133,.18), rgba(236,72,153,.05) 42%, transparent 72%); filter:blur(18px); animation:centerPulse 3.8s ease-in-out infinite; }
@@ -1421,10 +1420,8 @@
 
         @media(max-width:600px){ .galaxy-hint{bottom:18px;font-size:7px;letter-spacing:.22em}.center-sub{font-size:6px;max-width:240px}.photo-frame{width:92px;height:68px}.galaxy-nebula{filter:blur(40px)} }
 
-
         /* =========================================================
            LUXURY GALAXY SYSTEM — v2
-           Less UI · More Atmosphere
            ========================================================= */
         :root{
             --lux-bg:#05030A;
@@ -1442,7 +1439,6 @@
         html,body{background:var(--lux-bg);}
         body{color:var(--lux-white);}
 
-        /* Keep the atmosphere alive, but make it slow and expensive-looking. */
         .gate-nebula,.loading-nebula{animation-duration:28s;}
         .gate-star{animation-duration:14s,5s;}
         #sphere-3d-renderer-container,
@@ -1498,7 +1494,6 @@
             box-shadow:0 0 30px rgba(236,72,153,.18);
         }
 
-        /* Main controls: quiet glass instead of solid neon. */
         .btn-circle{
             background:var(--lux-gradient);
             box-shadow:0 0 22px rgba(236,72,153,.18);
@@ -1517,7 +1512,6 @@
             box-shadow:0 0 55px rgba(236,72,153,.32),0 0 120px rgba(109,40,217,.16);
         }
 
-        /* Navigation becomes compact and calm. */
         #mini-nav{
             background:rgba(18,7,31,.38);
             border-color:rgba(255,247,251,.10);
@@ -1546,7 +1540,6 @@
             background:radial-gradient(circle,rgba(255,247,251,.12),rgba(109,40,217,.07) 38%,transparent 70%);
         }
 
-        /* Mobile chapter header: the navigation becomes the experience. */
         #mobile-chapter-rail{
             display:none;
             position:fixed;
@@ -1592,7 +1585,6 @@
             color:rgba(255,247,251,.38);
         }
 
-        /* Gesture hint changes from "DRAG" to a deliberate mobile instruction. */
         .galaxy-hint{color:rgba(255,247,251,.34);}
         .mobile-gesture-hint{
             display:none;
@@ -1659,9 +1651,7 @@
             }
         }
 
-
-        /* ===== PERFORMANCE MODE =====
-           Keeps the luxury look while reducing GPU/paint pressure. */
+        /* ===== PERFORMANCE MODE ===== */
         .gate-nebula,.loading-nebula,.galaxy-nebula{
             will-change:transform;
             contain:paint;
@@ -1686,9 +1676,7 @@
             .gate-star{animation-duration:18s,4s;}
         }
 
-
-
-        /* ===== FLOATING PHOTO LANTERNS ===== */
+        /* ===== FLOATING PHOTO & VIDEO LANTERNS ===== */
         #photos-wrapper { z-index: 4; perspective: 1100px; overflow: hidden; }
         .photo-frame.lantern-frame {
             position:absolute; left:0; top:0; width:76px; height:108px; padding:0;
@@ -1705,7 +1693,22 @@
             transform:rotateY(-8deg); overflow:hidden;
         }
         .lantern-shell::before { content:''; position:absolute; inset:0; z-index:2; pointer-events:none; background:repeating-linear-gradient(90deg,transparent 0 10px,rgba(255,236,177,.22) 11px 12px); }
-        .lantern-shell img { position:relative; display:block; width:100%; height:100%; object-fit:cover; border-radius:7px; border:1px solid rgba(255,238,190,.8); filter:saturate(1.12) contrast(1.05); }
+        .lantern-shell img, .lantern-shell video { position:relative; display:block; width:100%; height:100%; object-fit:cover; border-radius:7px; border:1px solid rgba(255,238,190,.8); filter:saturate(1.12) contrast(1.05); }
+        .lantern-video-badge {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            z-index: 3;
+            background: rgba(236, 72, 153, 0.85);
+            color: #fff;
+            font-size: 9px;
+            line-height: 1;
+            padding: 2px 4px;
+            border-radius: 4px;
+            pointer-events: none;
+            box-shadow: 0 0 6px rgba(0,0,0,0.5);
+        }
+        .lantern-frame.zoomed .lantern-video-badge { display: none; }
         .lantern-cap { position:absolute; left:12px; right:12px; height:7px; border:1px solid #ffe1a0; background:linear-gradient(90deg,#8d2825,#ffd17a,#9c2829); border-radius:3px; box-shadow:0 0 8px rgba(255,173,65,.7); }
         .lantern-cap.top { top:8px; }
         .lantern-cap.bottom { top:82px; }
@@ -1715,16 +1718,16 @@
         .lantern-frame.zoomed { position:fixed !important; left:50% !important; top:50% !important; width:min(78vw,540px) !important; height:min(78vh,560px) !important; transform:translate(-50%,-50%) scale(1) !important; z-index:1000 !important; opacity:1 !important; filter:brightness(1.08); }
         .lantern-frame.zoomed .lantern-shell { left:8%; right:8%; top:8%; height:82%; padding:14px; border-radius:24px 24px 18px 18px; box-shadow:inset 0 0 28px rgba(255,222,130,.7),0 0 35px rgba(255,153,60,.8),0 0 100px rgba(255,108,43,.35); }
         .lantern-frame.zoomed .lantern-shell::before { display:none !important; }
-        .lantern-frame.zoomed .lantern-shell img {
+        .lantern-frame.zoomed .lantern-shell img,
+        .lantern-frame.zoomed .lantern-shell video {
             border-radius:15px;
             filter:none;
-            object-fit:cover;
-            background:transparent;
+            object-fit:contain;
+            background:#0a0410;
             width:100%;
             height:100%;
             display:block;
         }
-        /* Khi phóng to, ẩn hoàn toàn phần chữ/trang trí trung tâm để chỉ còn ảnh + khung lồng đèn. */
         #galaxy-container.lantern-photo-zoomed #galaxy-centerpiece,
         #galaxy-container.lantern-photo-zoomed .galaxy-hint,
         #galaxy-container.lantern-photo-zoomed .mobile-gesture-hint {
@@ -1742,7 +1745,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 </head>
 <body>
-
 
     <!-- ===== UNIVERSE LOADING SCREEN ===== -->
     <div id="universe-loading" aria-hidden="true" style="display:none; opacity:0; visibility:hidden;">
@@ -1812,7 +1814,6 @@
     <!-- ===== MAIN CONTENT ===== -->
     <div id="main-content">
 
-
         <div id="supernova-flash"></div>
         <div id="supernova-core"></div>
 
@@ -1857,7 +1858,6 @@
             <div class="galaxy-hint">KÉO ĐỂ KHÁM PHÁ · CHẠM VÀO KỶ NIỆM</div>
             <div class="mobile-gesture-hint">VUỐT ĐỂ XOAY · CHỤM ĐỂ PHÓNG TO · CHẠM VÀO KỶ NIỆM</div>
         </div>
-
 
         <div id="mobile-chapter-rail" aria-label="Các chương sinh nhật">
             <div class="chapter-rail-top">
@@ -2011,8 +2011,7 @@
             'Hy vọng cậu sẽ thích món quà nhỏ này. ❤️'
         ];
 
-        // Lightweight star field for the loading scene.
-        for (let i = 0; i < 65; i++) {
+        for (let i = 0; i < 95; i++) {
             const star = document.createElement('div');
             star.className = 'loading-star';
             const size = Math.random() * 2 + .4;
@@ -2048,9 +2047,8 @@
         // ===== PREMIUM UNIVERSE GATE =====
         const CORRECT_DAY = 23, CORRECT_MONTH = 11, CORRECT_YEAR = 2004;
 
-        // Slow-moving stars
         const starsContainer = document.getElementById('gate-stars');
-        for (let i = 0; i < 110; i++) {
+        for (let i = 0; i < 180; i++) {
             const s = document.createElement('div');
             s.className = 'gate-star';
             const size = Math.random() * 2.2 + 0.35;
@@ -2068,7 +2066,6 @@
             starsContainer.appendChild(s);
         }
 
-        // Mouse trail particles
         const particleLayer = document.getElementById('gate-cursor-particles');
         let lastParticleTime = 0;
 
@@ -2212,6 +2209,9 @@
             });
         });
 
+        // ===== GLOBAL BOOK HELPERS =====
+        let refreshBookDisplay = () => {};
+
         // ===== MAIN APP =====
         function initMainApp() {
             document.fonts.ready.then(() => { initThreeJsSphere(); resize(); });
@@ -2222,9 +2222,29 @@
             setupMiniNavigation();
         }
 
-        const photoURLs = [
-            "anh1.png","anh2.png","anh3.png","anh4.png","anh5.png",
-            "anh6.png","anh7.png","anh8.png","anh9.png","anh10.png"
+        // 19 ảnh (1.png - 19.png) và 2 video (video 1.mp4, video 2.mp4) đặt ở thư mục gốc
+        const mediaItems = [
+            { type: 'image', src: '1.png' },
+            { type: 'image', src: '2.png' },
+            { type: 'image', src: '3.png' },
+            { type: 'image', src: '4.png' },
+            { type: 'image', src: '5.png' },
+            { type: 'image', src: '6.png' },
+            { type: 'image', src: '7.png' },
+            { type: 'image', src: '8.png' },
+            { type: 'image', src: '9.png' },
+            { type: 'image', src: '10.png' },
+            { type: 'video', src: 'video 1.mp4' },
+            { type: 'image', src: '11.png' },
+            { type: 'image', src: '12.png' },
+            { type: 'image', src: '13.png' },
+            { type: 'image', src: '14.png' },
+            { type: 'image', src: '15.png' },
+            { type: 'image', src: '16.png' },
+            { type: 'image', src: '17.png' },
+            { type: 'image', src: '18.png' },
+            { type: 'image', src: '19.png' },
+            { type: 'video', src: 'video 2.mp4' }
         ];
 
         let currentState = 'SPHERE';
@@ -2253,11 +2273,10 @@
                 sphereRenderer.setClearColor(0x000000, 0);
                 sphereContainer.appendChild(sphereRenderer.domElement);
 
-                // ===== Deep space background =====
                 const bgGeometry = new THREE.SphereGeometry(500, 24, 16);
                 const bgCanvas = document.createElement('canvas');
-                bgCanvas.width = 1024;
-                bgCanvas.height = 512;
+                bgCanvas.width = 2048;
+                bgCanvas.height = 1024;
                 const bgCtx = bgCanvas.getContext('2d');
 
                 const bgGradient = bgCtx.createRadialGradient(
@@ -2270,10 +2289,10 @@
                 bgCtx.fillStyle = bgGradient;
                 bgCtx.fillRect(0, 0, bgCanvas.width, bgCanvas.height);
 
-                for (let i = 0; i < 1400; i++) {
+                for (let i = 0; i < 2200; i++) {
                     const x = Math.random() * bgCanvas.width;
                     const y = Math.random() * bgCanvas.height;
-                    const r = Math.random() * 1.2 + .15;
+                    const r = Math.random() * 1.35 + .15;
                     const a = Math.random() * .7 + .12;
                     bgCtx.fillStyle = `rgba(255,255,255,${a})`;
                     bgCtx.beginPath();
@@ -2288,7 +2307,6 @@
                 });
                 sphereScene.add(new THREE.Mesh(bgGeometry, bgMaterial));
 
-                // ===== Soft ambient glow =====
                 const glowTextureCanvas = document.createElement('canvas');
                 glowTextureCanvas.width = 256;
                 glowTextureCanvas.height = 256;
@@ -2314,7 +2332,6 @@
                 portalGlow.position.set(0,0,0);
                 sphereScene.add(portalGlow);
 
-                // ===== Portal core =====
                 const coreGeometry = new THREE.SphereGeometry(1.42, 32, 24);
                 const coreMaterial = new THREE.MeshBasicMaterial({
                     color: 0xff1493,
@@ -2336,7 +2353,6 @@
                 innerTextSphere = new THREE.Mesh(innerGeometry, innerMaterial);
                 sphereScene.add(innerTextSphere);
 
-                // ===== Portal shell =====
                 const shellGeometry = new THREE.SphereGeometry(1.72, 24, 18);
                 const shellMaterial = new THREE.MeshBasicMaterial({
                     color: 0xff69b4,
@@ -2348,14 +2364,12 @@
                 const shell = new THREE.Mesh(shellGeometry, shellMaterial);
                 sphereScene.add(shell);
 
-                // ===== Glowing center star =====
                 const coreDot = new THREE.Mesh(
                     new THREE.SphereGeometry(.11, 16, 12),
                     new THREE.MeshBasicMaterial({ color: 0xffffff })
                 );
                 sphereScene.add(coreDot);
 
-                // ===== Orbit rings =====
                 const orbitGroup = new THREE.Group();
                 sphereScene.add(orbitGroup);
 
@@ -2388,8 +2402,7 @@
                     orbitObjects.push({ ring, speed: cfg.speed });
                 });
 
-                // ===== Particle dust around portal =====
-                const particleCount = 450;
+                const particleCount = 650;
                 const particlePositions = new Float32Array(particleCount * 3);
                 const particleSizes = new Float32Array(particleCount);
                 const particleColors = new Float32Array(particleCount * 3);
@@ -2442,7 +2455,6 @@
                 const particleField = new THREE.Points(particleGeometry, particleMaterial);
                 sphereScene.add(particleField);
 
-                // ===== Tiny floating glyphs =====
                 const glyphs = ['✦', '·', '˚', '✧', '＋', '◦', '✶'];
                 const glyphGroup = new THREE.Group();
                 sphereScene.add(glyphGroup);
@@ -2577,7 +2589,7 @@
             cinemaParticleCtx = cinemaParticleCanvas.getContext('2d');
             resizeCinemaParticles();
 
-            const count = Math.min(500, Math.max(200, Math.floor(window.innerWidth * window.innerHeight / 3000)));
+            const count = Math.min(700, Math.max(260, Math.floor(window.innerWidth * window.innerHeight / 2600)));
             cinemaParticleData = [];
 
             for (let i = 0; i < count; i++) {
@@ -2747,17 +2759,15 @@
                 title.classList.remove('show');
 
                 currentState = 'GALAXY';
-                setLuxuryChapter('galaxy');
                 const galaxy = document.getElementById('galaxy-container');
                 galaxy.style.display = 'block';
                 galaxy.style.opacity = '1';
                 initGalaxy2DEngine();
 
+                const controls = document.getElementById('main-controls');
                 const charContainer = document.getElementById('chat-character-container');
-                if (charContainer) {
-                    charContainer.style.display = 'flex';
-                    charContainer.style.opacity = '1';
-                }
+                if (controls) { controls.style.display = 'flex'; controls.style.opacity = '1'; }
+                if (charContainer) { charContainer.style.display = 'flex'; charContainer.style.opacity = '1'; }
 
                 setTimeout(spawnShootingStarThầnTốc, 6500);
 
@@ -2790,46 +2800,72 @@
 
         function createSpaceGalaxyData() {
             if (spaceParticles.length > 0) return;
-            for (let i = 0; i < 650; i++) {
+            for (let i = 0; i < 850; i++) {
                 const theta = Math.random() * Math.PI * 2, phi = Math.acos((Math.random() * 2) - 1);
-                const r = i < 380 ? 145 + Math.random() * 55 : 175 + Math.random() * 420;
+                const r = i < 500 ? 145 + Math.random() * 55 : 175 + Math.random() * 420;
                 const x = r * Math.sin(phi) * Math.cos(theta),
-                      y = i < 380 ? r * Math.sin(phi) * Math.sin(theta) : (Math.random() - 0.5) * 75,
+                      y = i < 500 ? r * Math.sin(phi) * Math.sin(theta) : (Math.random() - 0.5) * 75,
                       z = r * Math.cos(phi);
-                spaceParticles.push({ x, y, z, size: Math.random() * 1.7 + .35, twinkle: Math.random()*Math.PI*2, color: i < 380 ? (Math.random()>.18?'#FB7185':'#ffffff') : (Math.random() > 0.58 ? '#F9A8D4' : '#ffffff') });
+                spaceParticles.push({ x, y, z, size: Math.random() * 1.7 + .35, twinkle: Math.random()*Math.PI*2, color: i < 500 ? (Math.random()>.18?'#FB7185':'#ffffff') : (Math.random() > 0.58 ? '#F9A8D4' : '#ffffff') });
             }
-            const lanternCount = 16;
-            for (let i = 0; i < lanternCount; i++) {
-                const url = photoURLs[i % photoURLs.length];
+
+            // Hiển thị đủ toàn bộ 19 ảnh + 2 video (21 đèn lồng)
+            mediaItems.forEach((item, i) => {
                 const frame = document.createElement('div');
                 frame.className = 'photo-frame lantern-frame';
-                frame.innerHTML = `<span class="lantern-cap top"></span><div class="lantern-shell"><img src="${url}" alt="Kỷ niệm ${i + 1}" onerror="this.onerror=null;this.style.opacity='.0';"></div><span class="lantern-cap bottom"></span><span class="lantern-tassel"></span>`;
+
+                if (item.type === 'video') {
+                    frame.innerHTML = `<span class="lantern-cap top"></span><div class="lantern-shell"><video src="${item.src}" autoplay loop muted playsinline preload="metadata"></video><span class="lantern-video-badge">▶</span></div><span class="lantern-cap bottom"></span><span class="lantern-tassel"></span>`;
+                } else {
+                    frame.innerHTML = `<span class="lantern-cap top"></span><div class="lantern-shell"><img src="${item.src}" alt="Kỷ niệm ${i + 1}" onerror="this.onerror=null;this.style.opacity='.0';"></div><span class="lantern-cap bottom"></span><span class="lantern-tassel"></span>`;
+                }
+
                 photosWrapper.appendChild(frame);
                 galaxyPhotoElements.push({
                     el: frame,
-                    x: Math.random() * .94 + .03,
-                    riseY: Math.random() * (window.innerHeight + 220),
-                    speed: 1.15 + Math.random() * 1.25,
-                    sway: 14 + Math.random() * 38,
+                    x: ((i + 0.5) / mediaItems.length) * 0.88 + 0.06 + (Math.random() - 0.5) * 0.04,
+                    riseY: ((i / mediaItems.length) * (window.innerHeight + 260)) - 100,
+                    speed: 1.15 + Math.random() * 1.15,
+                    sway: 14 + Math.random() * 34,
                     phase: Math.random() * Math.PI * 2,
                     depth: Math.random() * 360 - 150,
                     spin: (Math.random() - .5) * 20
                 });
+
                 frame.onclick = (e) => {
                     e.stopPropagation();
                     if (currentState !== 'GALAXY') return;
+                    const vid = frame.querySelector('video');
+
                     if (frame.classList.contains('zoomed')) {
                         frame.classList.remove('zoomed');
                         galaxyContainer.classList.remove('lantern-photo-zoomed');
                         isGalaxyZoomed = false;
+                        if (vid) {
+                            vid.muted = true;
+                            vid.controls = false;
+                            vid.play().catch(() => {});
+                        }
                     } else {
-                        document.querySelectorAll('.lantern-frame.zoomed').forEach(f => f.classList.remove('zoomed'));
+                        document.querySelectorAll('.lantern-frame.zoomed').forEach(f => {
+                            f.classList.remove('zoomed');
+                            const otherVid = f.querySelector('video');
+                            if (otherVid) {
+                                otherVid.muted = true;
+                                otherVid.controls = false;
+                            }
+                        });
                         frame.classList.add('zoomed');
                         galaxyContainer.classList.add('lantern-photo-zoomed');
                         isGalaxyZoomed = true;
+                        if (vid) {
+                            vid.muted = false;
+                            vid.controls = true;
+                            vid.play().catch(() => {});
+                        }
                     }
                 };
-            }
+            });
         }
 
         function projectGalaxyPoint(p, cx, cy, cosY, sinY, cosX, sinX) {
@@ -2985,7 +3021,7 @@
                         const letterOverlay = document.getElementById('letter-overlay');
                         letterOverlay.style.display = 'flex';
                         setTimeout(() => letterOverlay.style.opacity = '1', 10);
-                        if (typeof window.syncBookPosition === 'function') window.syncBookPosition();
+                        refreshBookDisplay();
                         return;
                     }
 
@@ -3139,39 +3175,113 @@
             }, {passive:false});
         }
 
+        // ===== BOOK EVENTS (2 TRANG TRÊN PC + 1 TRANG/LẦN TRÊN ĐIỆN THOẠI) =====
         function setupBookEvents() {
             const letterOverlay = document.getElementById('letter-overlay');
             const theBook = document.getElementById('book');
-            document.getElementById('close-letter').onclick = () => { setLuxuryChapter('galaxy'); letterOverlay.style.opacity = '0'; setTimeout(() => letterOverlay.style.display = 'none', 500); };
+            document.getElementById('close-letter').onclick = () => {
+                setLuxuryChapter('galaxy');
+                letterOverlay.style.opacity = '0';
+                setTimeout(() => letterOverlay.style.display = 'none', 500);
+            };
 
-            const p1 = document.getElementById('p1'), p2 = document.getElementById('p2'), p3 = document.getElementById('p3'), p4 = document.getElementById('p4');
-            const btnPrev = document.getElementById('prev-page'), btnNext = document.getElementById('next-page');
-            let currentPage = 1; const maxPages = 5;
+            const p1 = document.getElementById('p1'),
+                  p2 = document.getElementById('p2'),
+                  p3 = document.getElementById('p3'),
+                  p4 = document.getElementById('p4');
+            const btnPrev = document.getElementById('prev-page'),
+                  btnNext = document.getElementById('next-page');
 
-            function updateZIndex(paper, z) { setTimeout(() => { paper.style.zIndex = z; }, 300); }
-            function updateBookPosition() {
-                if (window.innerWidth <= 768) { theBook.style.transform = "translateX(0%)"; }
-                else { if (currentPage === 1) { theBook.style.transform = "translateX(0%)"; } else if (currentPage === maxPages) { theBook.style.transform = "translateX(100%)"; } else { theBook.style.transform = "translateX(50%)"; } }
+            // 8 mặt trang đơn cho điện thoại (0 -> 7)
+            const singlePages = [
+                p1.querySelector('.front'),
+                p1.querySelector('.back'),
+                p2.querySelector('.front'),
+                p2.querySelector('.back'),
+                p3.querySelector('.front'),
+                p3.querySelector('.back'),
+                p4.querySelector('.front'),
+                p4.querySelector('.back')
+            ];
+
+            let currentPage = 1; // Cho chế độ 2 trang PC (1..5)
+            const maxPages = 5;
+            let mobilePageIdx = 0; // Cho chế độ 1 trang điện thoại (0..7)
+
+            const isMobileBook = () => window.innerWidth <= 768;
+
+            function updateZIndex(paper, z) {
+                setTimeout(() => { paper.style.zIndex = z; }, 300);
             }
-            window.syncBookPosition = updateBookPosition;
+
+            function renderBookState() {
+                if (isMobileBook()) {
+                    theBook.style.transform = 'none';
+                    singlePages.forEach((el, idx) => {
+                        el.classList.toggle('mobile-active', idx === mobilePageIdx);
+                    });
+                } else {
+                    singlePages.forEach(el => el.classList.remove('mobile-active'));
+                    if (currentPage === 1) {
+                        theBook.style.transform = "translateX(0%)";
+                    } else if (currentPage === maxPages) {
+                        theBook.style.transform = "translateX(100%)";
+                    } else {
+                        theBook.style.transform = "translateX(50%)";
+                    }
+                }
+            }
+
+            refreshBookDisplay = renderBookState;
+
             function goNextPage() {
+                if (isMobileBook()) {
+                    mobilePageIdx = (mobilePageIdx + 1) % singlePages.length;
+                    renderBookState();
+                    return;
+                }
                 if (currentPage === 1) { p1.classList.add('flipped'); updateZIndex(p1, 1); currentPage++; }
                 else if (currentPage === 2) { p2.classList.add('flipped'); updateZIndex(p2, 2); currentPage++; }
                 else if (currentPage === 3) { p3.classList.add('flipped'); updateZIndex(p3, 3); currentPage++; }
                 else if (currentPage === 4) { p4.classList.add('flipped'); updateZIndex(p4, 4); currentPage++; }
-                else if (currentPage === 5) { p1.classList.remove('flipped'); updateZIndex(p1, 4); p2.classList.remove('flipped'); updateZIndex(p2, 3); p3.classList.remove('flipped'); updateZIndex(p3, 2); p4.classList.remove('flipped'); updateZIndex(p4, 1); currentPage = 1; }
-                updateBookPosition();
+                else if (currentPage === 5) {
+                    p1.classList.remove('flipped'); updateZIndex(p1, 4);
+                    p2.classList.remove('flipped'); updateZIndex(p2, 3);
+                    p3.classList.remove('flipped'); updateZIndex(p3, 2);
+                    p4.classList.remove('flipped'); updateZIndex(p4, 1);
+                    currentPage = 1;
+                }
+                renderBookState();
             }
+
             function goPrevPage() {
+                if (isMobileBook()) {
+                    mobilePageIdx = (mobilePageIdx - 1 + singlePages.length) % singlePages.length;
+                    renderBookState();
+                    return;
+                }
                 if (currentPage === 5) { p4.classList.remove('flipped'); updateZIndex(p4, 1); currentPage--; }
                 else if (currentPage === 4) { p3.classList.remove('flipped'); updateZIndex(p3, 2); currentPage--; }
                 else if (currentPage === 3) { p2.classList.remove('flipped'); updateZIndex(p2, 3); currentPage--; }
                 else if (currentPage === 2) { p1.classList.remove('flipped'); updateZIndex(p1, 4); currentPage--; }
-                updateBookPosition();
+                renderBookState();
             }
-            btnNext.onclick = goNextPage; btnPrev.onclick = goPrevPage;
-            theBook.addEventListener('click', (e) => { const rect = theBook.getBoundingClientRect(); const clickX = e.clientX - rect.left; if (clickX > rect.width / 2) goNextPage(); else goPrevPage(); });
-            window.addEventListener('resize', () => { if (letterOverlay.style.display === 'flex') updateBookPosition(); });
+
+            btnNext.onclick = goNextPage;
+            btnPrev.onclick = goPrevPage;
+
+            theBook.addEventListener('click', (e) => {
+                const rect = theBook.getBoundingClientRect();
+                const clickX = e.clientX - rect.left;
+                if (clickX > rect.width / 2) goNextPage();
+                else goPrevPage();
+            });
+
+            window.addEventListener('resize', () => {
+                if (letterOverlay.style.display === 'flex') renderBookState();
+            });
+
+            renderBookState();
         }
 
         function setupChatEvents() {
