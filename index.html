@@ -1677,7 +1677,7 @@
         }
 
         /* ===== FLOATING PHOTO & VIDEO LANTERNS ===== */
-        #photos-wrapper { z-index: 4; overflow: hidden; }
+        #photos-wrapper { z-index: 9; overflow: hidden; }
         .photo-frame.lantern-frame {
             position:absolute; left:0; top:0; width:76px; height:108px; padding:0;
             border:0; border-radius:0; background:transparent; box-shadow:none;
@@ -1693,17 +1693,36 @@
             overflow:hidden;
         }
         .lantern-shell::before { content:''; position:absolute; inset:0; z-index:2; pointer-events:none; background:repeating-linear-gradient(90deg,transparent 0 10px,rgba(255,236,177,.22) 11px 12px); }
-        .lantern-shell img, .lantern-shell video, .lantern-shell canvas.lantern-vid-canvas {
+        .lantern-shell img, .lantern-shell video {
             position:relative; z-index:1; display:block; width:100%; height:100%;
             object-fit:cover; border-radius:7px; border:1px solid rgba(255,238,190,.8);
-            filter:saturate(1.12) contrast(1.05); background:#0a0410;
+            filter:saturate(1.12) contrast(1.05); background:transparent;
         }
-        .lantern-shell canvas.lantern-vid-canvas {
-            position:absolute; inset:5px 4px; width:calc(100% - 8px); height:calc(100% - 10px);
-            z-index:2; pointer-events:none;
+        .lantern-frame.zoomed .lantern-shell video {
+            z-index: 3;
+            pointer-events: auto;
         }
-        .lantern-frame.zoomed .lantern-shell canvas.lantern-vid-canvas {
-            display:none !important;
+        .lantern-zoom-close {
+            display: none;
+            position: absolute;
+            top: 2%;
+            right: 4%;
+            z-index: 20;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            border: 1px solid rgba(255, 226, 150, 0.9);
+            background: rgba(20, 8, 24, 0.88);
+            color: #fff;
+            font-size: 20px;
+            line-height: 1;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 0 14px rgba(236, 72, 153, 0.65);
+        }
+        .lantern-frame.zoomed .lantern-zoom-close {
+            display: flex;
         }
         .lantern-video-badge {
             position: absolute;
@@ -2247,7 +2266,7 @@
             { type: 'image', src: '8.jpg' },
             { type: 'image', src: '9.jpg' },
             { type: 'image', src: '10.jpg' },
-            { type: 'video', id: 1, src: 'video 1.mp4' },
+            { type: 'video', id: 1, src: 'video1.mp4' },
             { type: 'image', src: '11.jpg' },
             { type: 'image', src: '12.jpg' },
             { type: 'image', src: '13.jpg' },
@@ -2257,7 +2276,7 @@
             { type: 'image', src: '17.jpg' },
             { type: 'image', src: '18.jpg' },
             { type: 'image', src: '19.jpg' },
-            { type: 'video', id: 2, src: 'video 2.mp4' }
+            { type: 'video', id: 2, src: 'video2.mp4' }
         ];
 
         // Hệ thống tự dò tên file video & tải trước ngay từ lúc người dùng chạm màn hình
@@ -2265,19 +2284,19 @@
 
         function getVideoCandidatePaths(num) {
             return [
-                `video ${num}.mp4`,
                 `video${num}.mp4`,
-                `Video ${num}.mp4`,
+                `video ${num}.mp4`,
                 `Video${num}.mp4`,
-                `video ${num}.MP4`,
+                `Video ${num}.mp4`,
                 `video${num}.MP4`,
+                `video ${num}.MP4`,
                 `video_${num}.mp4`,
                 `video-${num}.mp4`,
-                `video ${num}.mov`,
                 `video${num}.mov`,
+                `video ${num}.mov`,
                 `Video ${num}.MOV`,
-                `anh/video ${num}.mp4`,
-                `anh/video${num}.mp4`
+                `anh/video${num}.mp4`,
+                `anh/video ${num}.mp4`
             ];
         }
 
@@ -2291,6 +2310,7 @@
             vid.autoplay = true;
             vid.playsInline = true;
             vid.preload = 'auto';
+            vid.poster = `${num}.jpg`;
             vid.setAttribute('muted', '');
             vid.setAttribute('loop', '');
             vid.setAttribute('autoplay', '');
@@ -2333,17 +2353,12 @@
                 }
             };
 
-            vid.onloadedmetadata = () => {
-                if (vid.videoWidth === 0 || vid.videoHeight === 0) {
-                    // File tải được nhưng trình duyệt không giải mã được hình (ví dụ H.265/HEVC từ iPhone)
-                    updateStatus('bad_codec');
-                }
-            };
-
             vid.onloadeddata = () => {
                 if (vid.videoWidth > 0 && vid.videoHeight > 0) {
                     updateStatus('ready');
                     vid.play().catch(() => {});
+                } else {
+                    updateStatus('bad_codec');
                 }
             };
 
@@ -2941,20 +2956,22 @@
             mediaItems.forEach((item, i) => {
                 const frame = document.createElement('div');
                 frame.className = 'photo-frame lantern-frame';
-                let vidCanvas = null;
-                let vidCanvasCtx = null;
                 let smartVidState = null;
 
                 if (item.type === 'video') {
                     const num = item.id || 1;
-                    frame.innerHTML = `<span class="lantern-cap top"></span><div class="lantern-shell"><canvas class="lantern-vid-canvas" width="120" height="160"></canvas><span class="lantern-video-badge">▶ VIDEO</span></div><span class="lantern-cap bottom"></span><span class="lantern-tassel"></span>`;
+                    frame.innerHTML = `<span class="lantern-cap top"></span><div class="lantern-shell"><span class="lantern-video-badge">▶ VIDEO</span></div><span class="lantern-cap bottom"></span><span class="lantern-tassel"></span><button type="button" class="lantern-zoom-close" aria-label="Đóng">×</button>`;
                     const shellEl = frame.querySelector('.lantern-shell');
-                    vidCanvas = frame.querySelector('canvas.lantern-vid-canvas');
-                    vidCanvasCtx = vidCanvas ? vidCanvas.getContext('2d') : null;
 
                     smartVidState = createSmartVideoElement(num);
                     const vidEl = smartVidState.el;
-                    shellEl.insertBefore(vidEl, vidCanvas);
+                    shellEl.prepend(vidEl);
+
+                    vidEl.addEventListener('click', (e) => {
+                        if (frame.classList.contains('zoomed')) {
+                            e.stopPropagation();
+                        }
+                    });
 
                     const renderStatusNotice = (st) => {
                         const oldMsg = shellEl.querySelector('.lantern-vid-msg');
@@ -2968,7 +2985,7 @@
                             msg.className = 'lantern-vid-msg';
                             msg.style.cssText = 'position:absolute;inset:4px;z-index:5;display:flex;align-items:center;justify-content:center;text-align:center;font-size:8px;line-height:1.25;color:#fff;background:rgba(10,4,16,0.82);border-radius:6px;padding:4px;';
                             msg.textContent = st === 'missing'
-                                ? `Chưa thấy video ${num}.mp4`
+                                ? `Chưa thấy video${num}.mp4`
                                 : `Video ${num} cần đổi sang MP4 H.264`;
                             shellEl.appendChild(msg);
                         }
@@ -2978,7 +2995,7 @@
                     renderStatusNotice(smartVidState.status);
                     vidEl.play().catch(() => {});
                 } else {
-                    frame.innerHTML = `<span class="lantern-cap top"></span><div class="lantern-shell"><img src="${item.src}" alt="Kỷ niệm ${i + 1}" onerror="this.onerror=null;this.style.opacity='.0';"></div><span class="lantern-cap bottom"></span><span class="lantern-tassel"></span>`;
+                    frame.innerHTML = `<span class="lantern-cap top"></span><div class="lantern-shell"><img src="${item.src}" alt="Kỷ niệm ${i + 1}" onerror="this.onerror=null;this.style.opacity='.0';"></div><span class="lantern-cap bottom"></span><span class="lantern-tassel"></span><button type="button" class="lantern-zoom-close" aria-label="Đóng">×</button>`;
                 }
 
                 photosWrapper.appendChild(frame);
@@ -2996,8 +3013,6 @@
                     el: frame,
                     isVideo: item.type === 'video',
                     smartVidState,
-                    vidCanvas,
-                    vidCanvasCtx,
                     x: initX,
                     riseY: initRiseY,
                     speed: item.type === 'video' ? 1.15 : (1.15 + Math.random() * 1.15),
@@ -3100,15 +3115,10 @@
             const frameStep = Math.min(2, Math.max(.6, (now - (lastLanternFrame || now - 32)) / 32));
             lastLanternFrame = now;
             galaxyPhotoElements.forEach(p => {
-                if (p.isVideo && p.smartVidState && p.vidCanvasCtx && p.vidCanvas) {
+                if (p.isVideo && p.smartVidState && p.smartVidState.status === 'ready') {
                     const v = p.smartVidState.el;
-                    if (v && v.readyState >= 2 && v.videoWidth > 0) {
-                        try {
-                            p.vidCanvasCtx.drawImage(v, 0, 0, p.vidCanvas.width, p.vidCanvas.height);
-                        } catch (e) {}
-                        if (v.paused && !p.el.classList.contains('zoomed')) {
-                            v.play().catch(() => {});
-                        }
+                    if (v && v.paused && !p.el.classList.contains('zoomed')) {
+                        v.play().catch(() => {});
                     }
                 }
                 if (p.el.classList.contains('zoomed')) return;
