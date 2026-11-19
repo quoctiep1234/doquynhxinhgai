@@ -1682,7 +1682,7 @@
             position:absolute; left:0; top:0; width:76px; height:108px; padding:0;
             border:0; border-radius:0; background:transparent; box-shadow:none;
             backdrop-filter:none; -webkit-backdrop-filter:none; overflow:visible;
-            cursor:pointer; transform-style:preserve-3d; will-change:transform,opacity;
+            cursor:pointer; will-change:transform,opacity;
             transition:filter .25s ease; isolation:isolate;
         }
         .lantern-shell {
@@ -1693,7 +1693,7 @@
             transform:rotateY(-8deg); overflow:hidden;
         }
         .lantern-shell::before { content:''; position:absolute; inset:0; z-index:2; pointer-events:none; background:repeating-linear-gradient(90deg,transparent 0 10px,rgba(255,236,177,.22) 11px 12px); }
-        .lantern-shell img, .lantern-shell video { position:relative; display:block; width:100%; height:100%; object-fit:cover; border-radius:7px; border:1px solid rgba(255,238,190,.8); filter:saturate(1.12) contrast(1.05); }
+        .lantern-shell img, .lantern-shell video { position:relative; z-index:1; display:block; width:100%; height:100%; object-fit:cover; border-radius:7px; border:1px solid rgba(255,238,190,.8); filter:saturate(1.12) contrast(1.05); background:#0a0410; transform:translateZ(0); }
         .lantern-video-badge {
             position: absolute;
             top: 4px;
@@ -2222,7 +2222,7 @@
             setupMiniNavigation();
         }
 
-        // 19 ảnh (1.png - 19.png) và 2 video (video1.mp4, video2.mp4) đặt ở thư mục gốc
+        // 19 ảnh (1.png - 19.png) và 2 video (video 1.mp4, video 2.mp4) đặt ở thư mục gốc
         const mediaItems = [
             { type: 'image', src: '1.jpg' },
             { type: 'image', src: '2.jpg' },
@@ -2815,7 +2815,14 @@
                 frame.className = 'photo-frame lantern-frame';
 
                 if (item.type === 'video') {
-                    frame.innerHTML = `<span class="lantern-cap top"></span><div class="lantern-shell"><video src="${item.src}" autoplay loop muted playsinline preload="metadata"></video><span class="lantern-video-badge">▶</span></div><span class="lantern-cap bottom"></span><span class="lantern-tassel"></span>`;
+                    frame.innerHTML = `<span class="lantern-cap top"></span><div class="lantern-shell"><video src="${item.src}" autoplay loop muted playsinline preload="auto"></video><span class="lantern-video-badge">▶</span></div><span class="lantern-cap bottom"></span><span class="lantern-tassel"></span>`;
+                    const vidEl = frame.querySelector('video');
+                    if (vidEl) {
+                        vidEl.muted = true;
+                        vidEl.defaultMuted = true;
+                        vidEl.load();
+                        vidEl.play().catch(() => {});
+                    }
                 } else {
                     frame.innerHTML = `<span class="lantern-cap top"></span><div class="lantern-shell"><img src="${item.src}" alt="Kỷ niệm ${i + 1}" onerror="this.onerror=null;this.style.opacity='.0';"></div><span class="lantern-cap bottom"></span><span class="lantern-tassel"></span>`;
                 }
