@@ -1927,7 +1927,7 @@
             </div>
             <div class="portal-hint" id="instruction-text">
                 <span class="portal-hint-line"></span>
-                CHẠM VÀO QUẢ CẦU ĐỂ BẮT ĐẦU
+                CHẠM VÀO ĐÂY ĐỂ BẮT ĐẦU
                 <span class="portal-hint-line"></span>
             </div>
         </div>
@@ -1950,7 +1950,7 @@
                 <div class="center-star">✦</div>
                 <div class="center-kicker">CHÚC MỪNG SINH NHẬT</div>
                 <div class="center-name">QUỲNH</div>
-                <div class="center-date">23 <span>•</span> 11 <span>•</span> 2004</div>
+                <div class="center-date">** <span>•</span> ** <span>•</span> ****</div>
                 <div class="center-star bottom-star">✦</div>
                 <div class="center-sub">MỘT VŨ TRỤ NHỎ DÀNH RIÊNG CHO CẬU</div>
             </div>
@@ -2152,48 +2152,80 @@
         setLuxuryChapter('gate');
 
         // ===== UNIVERSE LOADING =====
-        const universeLoading = document.getElementById('universe-loading');
-        const loadingMessage = document.getElementById('loading-message');
-        const loadingStars = document.getElementById('loading-stars');
+const universeLoading = document.getElementById('universe-loading');
+const loadingMessage = document.getElementById('loading-message');
+const loadingStars = document.getElementById('loading-stars');
 
-        const loadingMessages = [
-            'Đây là tâm huyết của Quốc Tiệp, được tạo nên sau 23 ngày 11 giờ miệt mài thực hiện.',
-            'Từng chi tiết nhỏ đều được chuẩn bị bằng tất cả sự chân thành.',
-            'Hy vọng cậu sẽ thích món quà nhỏ này. ❤️'
-        ];
+const loadingMessages = [
+    'Đây là tâm huyết của Quốc Tiệp, được tạo nên sau 23 ngày 11 giờ miệt mài thực hiện.',
+    'Từng chi tiết nhỏ đều được chuẩn bị bằng tất cả sự chân thành.',
+    'Hy vọng cậu sẽ thích món quà nhỏ này. ❤️'
+];
 
-        for (let i = 0; i < 95; i++) {
-            const star = document.createElement('div');
-            star.className = 'loading-star';
-            const size = Math.random() * 2 + .4;
+// Thời gian đọc riêng cho từng câu (ms) - câu dài để lâu hơn
+const messageDurations = [4500, 3800, 3800];
 
-            star.style.cssText = `
-                width:${size}px;
-                height:${size}px;
-                top:${Math.random() * 100}%;
-                left:${Math.random() * 100}%;
-                --lx:${(Math.random() - .5) * 24}px;
-                --ly:${(Math.random() - .5) * 24}px;
-                animation-delay:${Math.random() * -5}s,${Math.random() * -7}s;
-                animation-duration:${Math.random() * 2 + 2}s,${Math.random() * 7 + 5}s;
-            `;
+// Tránh tạo trùng sao nếu script chạy lại
+if (loadingStars && loadingStars.children.length === 0) {
+    for (let i = 0; i < 95; i++) {
+        const star = document.createElement('div');
+        star.className = 'loading-star';
+        const size = Math.random() * 2 + 0.4;
 
-            loadingStars.appendChild(star);
-        }
+        star.style.cssText = `
+            width:${size}px;
+            height:${size}px;
+            top:${Math.random() * 100}%;
+            left:${Math.random() * 100}%;
+            --lx:${(Math.random() - 0.5) * 24}px;
+            --ly:${(Math.random() - 0.5) * 24}px;
+            animation-delay:${Math.random() * -5}s,${Math.random() * -7}s;
+            animation-duration:${Math.random() * 2 + 2}s,${Math.random() * 7 + 5}s;
+        `;
 
-        let loadingMessageIndex = 0;
+        loadingStars.appendChild(star);
+    }
+}
 
-        setInterval(() => {
-            if (!loadingMessage || !universeLoading || universeLoading.classList.contains('loading-complete')) return;
+// Hủy timer cũ nếu đoạn code vô tình được gọi lại lần 2
+if (window._loadingMsgTimer) {
+    clearTimeout(window._loadingMsgTimer);
+}
 
-            loadingMessage.classList.add('message-changing');
+let loadingMessageIndex = 0;
 
-            setTimeout(() => {
-                loadingMessageIndex = (loadingMessageIndex + 1) % loadingMessages.length;
-                loadingMessage.textContent = loadingMessages[loadingMessageIndex];
-                loadingMessage.classList.remove('message-changing');
-            }, 320);
-        }, 3000);
+if (loadingMessage) {
+    loadingMessage.textContent = loadingMessages[0];
+    loadingMessage.classList.remove('message-changing');
+}
+
+function showNextLoadingMessage() {
+    if (!loadingMessage || !universeLoading || universeLoading.classList.contains('loading-complete')) {
+        return;
+    }
+
+    // Dừng ở câu 3 để giữ lời chúc trên màn hình, không nhảy ngược về câu 1
+    if (loadingMessageIndex >= loadingMessages.length - 1) {
+        return;
+    }
+
+    loadingMessage.classList.add('message-changing');
+
+    window._loadingMsgTimer = setTimeout(() => {
+        loadingMessageIndex++;
+        loadingMessage.textContent = loadingMessages[loadingMessageIndex];
+        loadingMessage.classList.remove('message-changing');
+
+        // Chỉ bắt đầu đếm giờ cho câu kế tiếp sau khi câu này đã hiện ra
+        window._loadingMsgTimer = setTimeout(
+            showNextLoadingMessage,
+            messageDurations[loadingMessageIndex]
+        );
+    }, 320);
+}
+
+// Bắt đầu đếm giờ cho câu đầu tiên
+window._loadingMsgTimer = setTimeout(showNextLoadingMessage, messageDurations[0]);
 
         // ===== PREMIUM UNIVERSE GATE =====
         const CORRECT_DAY = 23, CORRECT_MONTH = 11, CORRECT_YEAR = 2004;
