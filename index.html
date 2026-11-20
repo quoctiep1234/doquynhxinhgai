@@ -2153,6 +2153,7 @@
 
         // ===== UNIVERSE LOADING =====
 // ===== UNIVERSE LOADING =====
+// ===== UNIVERSE LOADING =====
 const universeLoading = document.getElementById('universe-loading');
 const loadingMessage = document.getElementById('loading-message');
 const loadingStars = document.getElementById('loading-stars');
@@ -2184,41 +2185,66 @@ if (loadingStars && loadingStars.children.length === 0) {
     }
 }
 
-// Xóa timer cũ nếu script vô tình chạy lại
+// Xóa timer cũ nếu script chạy lại
 if (window._loadingTimers) {
     window._loadingTimers.forEach(clearTimeout);
 }
 window._loadingTimers = [];
 
-const FADE_DURATION = 320; // thời gian hiệu ứng mờ chữ (ms)
-const STEP_DURATION = 3000; // mỗi câu đúng 3s -> 3 câu = 9s
+// Chặn các đoạn code khác tự tắt màn hình loading trước 13.6s
+let canCloseLoading = false;
+let pendingClose = false;
 
-if (loadingMessage) {
-    // 0s -> 3s: Hiện câu 1
-    loadingMessage.textContent = loadingMessages[0];
-    loadingMessage.classList.remove('message-changing');
-
-    // Lên lịch chuẩn từng mốc 3s (3000ms) và 6s (6000ms)
-    for (let i = 1; i < loadingMessages.length; i++) {
-        const switchTime = i * STEP_DURATION;
-
-        // Mờ chữ trước 320ms để đúng mốc 3s / 6s là chữ mới hiện ra
-        const fadeTimer = setTimeout(() => {
-            if (!universeLoading || universeLoading.classList.contains('loading-complete')) return;
-            loadingMessage.classList.add('message-changing');
-        }, switchTime - FADE_DURATION);
-
-        // Đổi sang câu tiếp theo đúng mốc 3s / 6s
-        const textTimer = setTimeout(() => {
-            if (!universeLoading || universeLoading.classList.contains('loading-complete')) return;
-            loadingMessage.textContent = loadingMessages[i];
-            loadingMessage.classList.remove('message-changing');
-        }, switchTime);
-
-        window._loadingTimers.push(fadeTimer, textTimer);
+if (universeLoading) {
+    if (universeLoading.classList.contains('loading-complete')) {
+        universeLoading.classList.remove('loading-complete');
+        pendingClose = true;
     }
+
+    const loadingGuard = new MutationObserver(() => {
+        if (!canCloseLoading && universeLoading.classList.contains('loading-complete')) {
+            universeLoading.classList.remove('loading-complete');
+            pendingClose = true;
+        }
+    });
+    loadingGuard.observe(universeLoading, { attributes: true, attributeFilter: ['class'] });
+
+    // Mở khóa tắt loading sau khi chạy xong câu 3 (13.6s)
+    window._loadingTimers.push(setTimeout(() => {
+        canCloseLoading = true;
+        loadingGuard.disconnect();
+        if (pendingClose) {
+            universeLoading.classList.add('loading-complete');
+        }
+    }, 13600));
 }
 
+if (loadingMessage) {
+    // 0s -> 4s: Ẩn hoàn toàn, chưa chạy chữ
+    loadingMessage.textContent = '';
+    loadingMessage.classList.add('message-changing');
+
+    const schedule = [
+        { text: loadingMessages[0], showAt: 4000 },  // Giây 5-7 (hiện 3s)
+        { text: loadingMessages[1], showAt: 7300 },  // Giây 8-10 (hiện 3s)
+        { text: loadingMessages[2], showAt: 10600 }  // Giây 11-13 (hiện 3s)
+    ];
+
+    schedule.forEach((item, index) => {
+        // Từ câu 2 trở đi: làm mờ câu cũ 300ms trước khi hiện câu mới
+        if (index > 0) {
+            window._loadingTimers.push(setTimeout(() => {
+                loadingMessage.classList.add('message-changing');
+            }, item.showAt - 300));
+        }
+
+        // Hiện câu mới đúng mốc thời gian
+        window._loadingTimers.push(setTimeout(() => {
+            loadingMessage.textContent = item.text;
+            loadingMessage.classList.remove('message-changing');
+        }, item.showAt));
+    });
+}
         // ===== PREMIUM UNIVERSE GATE =====
         const CORRECT_DAY = 23, CORRECT_MONTH = 11, CORRECT_YEAR = 2004;
 
