@@ -252,7 +252,7 @@
             user-select: none;
         }
 
-        input {
+        input, textarea {
             -webkit-user-select: auto;
             user-select: auto;
         }
@@ -873,6 +873,7 @@
 
         #galaxy-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 5; display: none; background: black; cursor: grab; opacity: 0; transition: opacity 2s; }
         #spaceCanvas { display: block; position: absolute; top: 0; left: 0; z-index: 1; pointer-events: none; }
+        #cherryRainCanvas { display: block; position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 3; pointer-events: none; }
         
         #instruction-text {
             position: absolute; top: 85%; left: 50%; transform: translate(-50%, -50%);
@@ -1017,25 +1018,51 @@
         }
 
         #chat-character-container {
-            position: fixed; bottom: 10px; right: 20px; z-index: 1500; display: none; flex-direction: column; align-items: flex-end; opacity: 0; transition: opacity 1s;
+            position: fixed; bottom: 10px; right: 20px; z-index: 2200; display: none; flex-direction: column; align-items: flex-end; opacity: 0; transition: opacity 1s;
         }
         
         #chat-box {
-            display: none; width: 260px; background: rgba(20, 10, 25, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(236, 72, 153, 0.35); border-radius: 15px 15px 0 15px; padding: 15px; margin-bottom: 15px;
-            box-shadow: 0 8px 32px 0 rgba(236, 72, 153, 0.4); color: #fff;
+            display: none; width: 295px; background: rgba(20, 10, 25, 0.90); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+            border: 1px solid rgba(236, 72, 153, 0.45); border-radius: 18px 18px 4px 18px; padding: 14px; margin-bottom: 12px;
+            box-shadow: 0 10px 36px 0 rgba(236, 72, 153, 0.42); color: #fff;
             animation: popIn 0.3s ease-out forwards; transform-origin: bottom right;
         }
+        .chat-box-header {
+            display: flex; align-items: center; justify-content: space-between;
+            padding-bottom: 8px; margin-bottom: 8px;
+            border-bottom: 1px solid rgba(251, 113, 133, 0.25);
+            font-size: 13px; font-weight: 600; color: #FFF7FB;
+        }
+        .chat-box-header span {
+            display: flex; align-items: center; gap: 6px;
+        }
+        .chat-status-dot {
+            width: 7px; height: 7px; border-radius: 50%; background: #34D399;
+            box-shadow: 0 0 8px #34D399;
+        }
+        #chat-close-btn {
+            background: transparent; border: none; color: rgba(255,255,255,0.65);
+            font-size: 18px; line-height: 1; cursor: pointer; padding: 0 4px;
+        }
+        #chat-close-btn:hover { color: #FB7185; }
         @keyframes popIn { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-        #chat-messages { height: 150px; overflow-y: auto; margin-bottom: 10px; font-size: 14px; border-bottom: 1px solid rgba(236, 72, 153, 0.3); padding-bottom: 5px; }
-        #chat-messages p { margin: 5px 0; line-height: 1.4; }
+        #chat-messages { height: 165px; overflow-y: auto; margin-bottom: 10px; font-size: 14px; border-bottom: 1px solid rgba(236, 72, 153, 0.3); padding-bottom: 6px; padding-right: 4px; }
+        #chat-messages p { margin: 6px 0; line-height: 1.45; word-break: break-word; }
         .msg-bot { color: #FB7185; text-shadow: 0 0 2px rgba(251,113,133,0.5); }
-        .msg-user { color: #A78BFA; text-align: right; text-shadow: 0 0 2px rgba(0,191,255,0.5); }
+        .msg-user { color: #E9D5FF; text-align: right; text-shadow: 0 0 2px rgba(167,139,250,0.45); }
+        .msg-sync-status {
+            display: block; font-size: 10px; color: rgba(255, 255, 255, 0.55); margin-top: 2px;
+        }
+        .msg-sync-status.sent { color: #6EE7B7; }
+        .msg-sync-status.error { color: #FDA4AF; }
         
-        .chat-input-area { display: flex; gap: 5px; }
-        #chat-input { flex: 1; padding: 8px 12px; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); color: white; border-radius: 20px; outline: none; }
+        .chat-input-area { display: flex; gap: 6px; }
+        #chat-input { flex: 1; min-width: 0; padding: 9px 13px; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.22); color: white; border-radius: 20px; outline: none; font-size: 13px; }
+        #chat-input:focus { border-color: #FB7185; box-shadow: 0 0 12px rgba(236,72,153,0.3); }
         #chat-input::placeholder { color: rgba(255, 255, 255, 0.5); }
-        #chat-send { background: #EC4899; color: white; border: none; padding: 8px 15px; border-radius: 20px; cursor: pointer; font-weight: bold; box-shadow: 0 0 10px #EC4899; }
+        #chat-send { background: #EC4899; color: white; border: none; padding: 8px 15px; border-radius: 20px; cursor: pointer; font-weight: bold; box-shadow: 0 0 10px #EC4899; transition: transform 0.2s, opacity 0.2s; }
+        #chat-send:hover { transform: scale(1.04); }
+        #chat-send:disabled { opacity: 0.6; cursor: wait; }
         
         #chat-avatar { width: 150px; height: auto; cursor: pointer; transition: transform 0.3s, filter 0.3s; filter: drop-shadow(0 0 10px rgba(251, 113, 133, 0.5)); animation: float 3s ease-in-out infinite; }
         #chat-avatar:hover { transform: scale(1.1); filter: drop-shadow(0 0 20px rgba(251, 113, 133, 1)); }
@@ -1057,8 +1084,6 @@
         @keyframes popThought { 0% { transform: scale(0); opacity: 0; transform-origin: bottom right; } 100% { transform: scale(1); opacity: 1; transform-origin: bottom right; } }
         @keyframes fadeThought { 0% { transform: scale(1); opacity: 1; transform-origin: bottom right; } 100% { transform: scale(0.8) translateY(-20px); opacity: 0; transform-origin: bottom right; } }
 
-        .shooting-star { position: fixed; right: -20vw; color: rgba(251, 113, 133, 0.68); font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif; font-size: 24px; font-weight: bold; pointer-events: none; z-index: 50; white-space: nowrap; filter: blur(1.5px); text-shadow: 20px -20px 10px rgba(255, 255, 255, 0.6), 40px -40px 20px rgba(236, 72, 153, 0.4); animation-name: shoot; animation-timing-function: linear; animation-fill-mode: forwards; }
-        @keyframes shoot { 0% { transform: translate(0, 0) rotate(-35deg); opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { transform: translate(-150vw, 150vh) rotate(-35deg); opacity: 0; } }
         @keyframes blink { from, to { border-color: transparent } 50% { border-color: #EC4899; } }
 
         #supernova-flash { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 9999; display: none; opacity: 0; pointer-events: none; transition: opacity 0.4s ease-out; }
@@ -1073,7 +1098,7 @@
             .controls { right: auto; left: 20px; bottom: 20px; flex-direction: column; }
             .btn-circle { width: 50px; height: 50px; font-size: 20px; }
             #chat-avatar { width: 100px; }
-            #chat-box { width: 220px; right: 0; }
+            #chat-box { width: min(88vw, 320px); right: 0; border-radius: 18px; }
             #thought-bubble { bottom: 130px; font-size: 22px; padding: 10px 15px; }
             #thought-bubble::after, #thought-bubble::before { right: 20px; }
             .loading-kicker { font-size: .58rem; letter-spacing: .34em; }
@@ -1368,7 +1393,7 @@
         @keyframes orbitSpinReverse { to{transform:rotate(-298deg)} }
 
         /* ===== MINI NAVIGATION ===== */
-        #mini-nav{position:fixed;top:50%;left:28px;transform:translateY(-50%);z-index:1800;width:150px;padding:20px 18px;border:1px solid rgba(255,255,255,.10);border-radius:18px;background:rgba(8,4,16,.30);backdrop-filter:blur(18px) saturate(135%);-webkit-backdrop-filter:blur(18px) saturate(135%);box-shadow:0 18px 50px rgba(0,0,0,.30),0 0 35px rgba(236,72,153,.06);opacity:0;visibility:hidden;pointer-events:none;transition:opacity .6s ease,transform .6s ease,visibility .6s}
+        #mini-nav{position:fixed;top:50%;left:28px;transform:translateY(-50%);z-index:1800;width:155px;padding:20px 18px;border:1px solid rgba(255,255,255,.10);border-radius:18px;background:rgba(8,4,16,.30);backdrop-filter:blur(18px) saturate(135%);-webkit-backdrop-filter:blur(18px) saturate(135%);box-shadow:0 18px 50px rgba(0,0,0,.30),0 0 35px rgba(236,72,153,.06);opacity:0;visibility:hidden;pointer-events:none;transition:opacity .6s ease,transform .6s ease,visibility .6s}
         #mini-nav.visible{opacity:1;visibility:visible;pointer-events:auto}
         .mini-nav-name{font-family:'Dancing Script',cursive,sans-serif;font-size:1.55rem;color:#fff;letter-spacing:.04em;text-shadow:0 0 16px rgba(236,72,153,.55);margin-bottom:7px}
         .mini-nav-rule{width:42px;height:1px;background:linear-gradient(90deg,#FB7185,transparent);margin-bottom:14px}
@@ -1600,20 +1625,20 @@
             #mobile-chapter-rail{display:block;}
             #mini-nav{
                 top:auto;bottom:16px;left:50%;transform:translateX(-50%);
-                width:min(330px,calc(100vw - 30px));
-                padding:8px 10px;
+                width:min(365px,calc(100vw - 18px));
+                padding:8px 8px;
                 display:flex;align-items:center;justify-content:space-between;
                 border-radius:999px;
-                background:rgba(18,7,31,.62);
+                background:rgba(18,7,31,.68);
                 backdrop-filter:blur(20px) saturate(130%);
             }
             .mini-nav-name,.mini-nav-rule{display:none;}
             .mini-nav-link{
-                width:auto;flex:1;justify-content:center;gap:5px;
-                padding:8px 4px;font-size:7px;letter-spacing:.10em;
-                text-align:center;
+                width:auto;flex:1;justify-content:center;gap:4px;
+                padding:8px 2px;font-size:6.8px;letter-spacing:.06em;
+                text-align:center;white-space:nowrap;
             }
-            .mini-nav-link .nav-dot{width:5px;height:5px;flex-basis:5px;}
+            .mini-nav-link .nav-dot{width:4.5px;height:4.5px;flex-basis:4.5px;}
             .mobile-gesture-hint{display:block;}
             .galaxy-hint{display:none;}
             #galaxy-centerpiece{
@@ -1626,7 +1651,15 @@
             .center-orbit{animation-duration:20s;}
             .orbit-two{animation-duration:28s;}
             .photo-frame{width:86px;height:64px;}
-            #chat-character-container{display:none!important;}
+            #chat-character-container{
+                bottom: 72px; right: 50%; transform: translateX(50%);
+                align-items: center;
+            }
+            #chat-avatar, #thought-bubble { display: none !important; }
+            #chat-box {
+                margin-bottom: 0;
+                transform-origin: bottom center;
+            }
             .controls{right:14px;left:auto;bottom:82px;gap:8px;flex-direction:row;}
             .btn-circle{width:42px;height:42px;font-size:17px;}
             #instruction-text{display:none;}
@@ -1775,6 +1808,11 @@
 </style>
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <!-- Firebase SDK (Compat để chạy mượt cả trên hosting lẫn file cục bộ) -->
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-analytics-compat.js"></script>
 </head>
 <body>
 
@@ -1873,6 +1911,7 @@
 
         <div id="galaxy-container">
             <canvas id="spaceCanvas"></canvas>
+            <canvas id="cherryRainCanvas"></canvas>
             <div class="galaxy-vignette"></div>
             <div class="galaxy-nebula nebula-a"></div>
             <div class="galaxy-nebula nebula-b"></div>
@@ -1918,6 +1957,7 @@
             <button class="mini-nav-link" data-nav="memories"><span class="nav-dot"></span>Kỷ niệm</button>
             <button class="mini-nav-link" data-nav="letter"><span class="nav-dot"></span>Lá thư</button>
             <button class="mini-nav-link" data-nav="wishes"><span class="nav-dot"></span>Điều ước</button>
+            <button class="mini-nav-link" data-nav="message"><span class="nav-dot"></span>Nhắn tin</button>
         </nav>
 
         <!-- ===== WISH SYSTEM ===== -->
@@ -1993,12 +2033,16 @@
         <div id="chat-character-container">
             <div id="thought-bubble">Chúc mừng sinh nhật<br>Đỗ Quỳnh nha! 🎉</div>
             <div id="chat-box">
+                <div class="chat-box-header">
+                    <span><i class="chat-status-dot"></i> Gửi tin nhắn 💌</span>
+                    <button type="button" id="chat-close-btn" title="Đóng">×</button>
+                </div>
                 <div id="chat-messages">
-                    <p class="msg-bot"><strong>Quỳnh:</strong> Hihi, quả cầu nổ đỉnh quá ta! Sinh nhật tớ vui lắm! 🎉</p>
+                    <p class="msg-bot"><strong>Quỳnh:</strong> Hihi, quả cầu nổ đỉnh quá ta! Cậu nhắn gì cho tớ đi, tin nhắn sẽ được lưu lại nè! 🎉</p>
                 </div>
                 <div class="chat-input-area">
                     <input type="text" id="chat-input" placeholder="Nhắn gì đó đi...">
-                    <button id="chat-send">Gửi</button>
+                    <button type="button" id="chat-send">Gửi</button>
                 </div>
             </div>
             <img id="chat-avatar" src="anhdoquynh.png" alt="Quỳnh" title="Bấm để trò chuyện!">
@@ -2010,6 +2054,66 @@
     </div>
 
     <script>
+
+        // ===== FIREBASE INITIALIZATION =====
+        const firebaseConfig = {
+            apiKey: "AIzaSyCjtkvokQFRPP_UyQwfRbH4gGcCbfxL_d8",
+            authDomain: "sinhnhatcuaem-4ca6b.firebaseapp.com",
+            databaseURL: "https://sinhnhatcuaem-4ca6b-default-rtdb.firebaseio.com",
+            projectId: "sinhnhatcuaem-4ca6b",
+            storageBucket: "sinhnhatcuaem-4ca6b.firebasestorage.app",
+            messagingSenderId: "129249213960",
+            appId: "1:129249213960:web:80b88e06ad980d4e45dbbd",
+            measurementId: "G-P6RPV3PKLS"
+        };
+
+        let firebaseApp = null;
+        let firebaseRtdb = null;
+        let firebaseFirestore = null;
+
+        try {
+            if (window.firebase) {
+                firebaseApp = firebase.apps.length ? firebase.app() : firebase.initializeApp(firebaseConfig);
+                try { firebase.analytics(firebaseApp); } catch (e) {}
+                try { firebaseRtdb = firebase.database(firebaseApp); } catch (e) { console.warn('RTDB init warning:', e); }
+                try { firebaseFirestore = firebase.firestore(firebaseApp); } catch (e) { console.warn('Firestore init warning:', e); }
+            }
+        } catch (err) {
+            console.error('Lỗi khởi tạo Firebase:', err);
+        }
+
+        async function saveMessageToFirebase(text, category = 'chat_message') {
+            const payload = {
+                sender: 'Đỗ Quỳnh',
+                message: text,
+                type: category,
+                createdAt: new Date().toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' }),
+                timestamp: (window.firebase && firebase.database && firebase.database.ServerValue)
+                    ? firebase.database.ServerValue.TIMESTAMP
+                    : Date.now()
+            };
+
+            const tasks = [];
+            const nodeName = category === 'wish' ? 'wishes' : 'messages';
+
+            if (firebaseRtdb) {
+                tasks.push(firebaseRtdb.ref(nodeName).push(payload));
+            }
+            if (firebaseFirestore) {
+                tasks.push(
+                    firebaseFirestore.collection(nodeName).add({
+                        ...payload,
+                        timestamp: Date.now()
+                    }).catch(() => null)
+                );
+            }
+
+            if (tasks.length === 0) {
+                throw new Error('Firebase chưa sẵn sàng');
+            }
+
+            await Promise.all(tasks);
+        }
 
         // ===== LUXURY GALAXY CHAPTER STATE =====
         function setLuxuryChapter(name){
@@ -2254,7 +2358,7 @@
             setupMiniNavigation();
         }
 
-        // 19 ảnh và 2 video đặt ở thư mục gốc
+        // 17 ảnh và 2 video đặt ở thư mục gốc (đã bỏ ảnh 18 và 19)
         const mediaItems = [
             { type: 'image', src: '1.jpg' },
             { type: 'image', src: '2.jpg' },
@@ -2317,7 +2421,7 @@
 
             const state = {
                 el: vid,
-                status: 'loading', // 'loading' | 'ready' | 'missing' | 'bad_codec'
+                status: 'loading',
                 resolvedUrl: '',
                 onStatusChange: null
             };
@@ -2381,7 +2485,6 @@
             });
         }
 
-        // Bắt đầu tải trước 2 video ngay khi trang mở và kích hoạt phát mỗi khi người dùng chạm màn hình
         createSmartVideoElement(1);
         createSmartVideoElement(2);
         document.addEventListener('pointerdown', unlockAllLanternVideos, { passive: true });
@@ -2910,8 +3013,6 @@
                 if (controls) { controls.style.display = 'flex'; controls.style.opacity = '1'; }
                 if (charContainer) { charContainer.style.display = 'flex'; charContainer.style.opacity = '1'; }
 
-                setTimeout(spawnShootingStarThầnTốc, 6500);
-
                 setTimeout(() => {
                     const bubble = document.getElementById('thought-bubble');
                     if (bubble) {
@@ -2925,14 +3026,154 @@
         }
 
         const spaceCanvas = document.getElementById('spaceCanvas'); const sCtx = spaceCanvas.getContext('2d');
+        const cherryRainCanvas = document.getElementById('cherryRainCanvas'); const cherryCtx = cherryRainCanvas.getContext('2d');
         const photosWrapper = document.getElementById('photos-wrapper');
         const galaxyContainer = document.getElementById('galaxy-container');
-        let spaceParticles = [], galaxyPhotoElements = [], galaxyAngleY = 0, galaxyTiltX = -0.1, isDraggingGalaxy = false, isGalaxyZoomed = false;
+        let spaceParticles = [], cherryDrops = [], galaxyPhotoElements = [], galaxyAngleY = 0, galaxyTiltX = -0.1, isDraggingGalaxy = false, isGalaxyZoomed = false;
         let prevMousePosGalaxy = { x: 0, y: 0 }; const galaxyFov = 620;
+
+        // ===== CHERRY RAIN SYSTEM (MƯA CHERRY Ở VŨ TRỤ CUỐI CÙNG) =====
+        function initCherryRain() {
+            if (cherryDrops.length > 0) return;
+            const totalDrops = window.innerWidth <= 768 ? 36 : 58;
+            for (let i = 0; i < totalDrops; i++) {
+                cherryDrops.push(createCherryDrop(true));
+            }
+        }
+
+        function createCherryDrop(randomY = false) {
+            const w = window.innerWidth || 1280;
+            const h = window.innerHeight || 720;
+            const isTwinCherry = Math.random() < 0.24; // 24% trái cherry đôi lung linh, 76% cánh hoa cherry
+            return {
+                x: Math.random() * w,
+                y: randomY ? Math.random() * h : (-25 - Math.random() * 140),
+                size: isTwinCherry ? (7 + Math.random() * 4.5) : (6.5 + Math.random() * 6.5),
+                speedY: isTwinCherry ? (1.05 + Math.random() * 0.9) : (0.9 + Math.random() * 1.15),
+                swayAmp: 12 + Math.random() * 24,
+                swaySpeed: 0.001 + Math.random() * 0.0014,
+                phase: Math.random() * Math.PI * 2,
+                rotation: Math.random() * Math.PI * 2,
+                rotSpeed: (Math.random() - 0.5) * 0.025,
+                flipPhase: Math.random() * Math.PI * 2,
+                flipSpeed: 0.02 + Math.random() * 0.025,
+                alpha: 0.55 + Math.random() * 0.4,
+                isTwinCherry,
+                tint: Math.random() > 0.45 ? '#FB7185' : '#F9A8D4'
+            };
+        }
+
+        function drawCherryPetal(ctx, drop) {
+            const s = drop.size;
+            const flipScale = 0.45 + 0.55 * Math.abs(Math.sin(drop.flipPhase));
+            ctx.save();
+            ctx.translate(drop.x, drop.y);
+            ctx.rotate(drop.rotation);
+            ctx.scale(flipScale, 1);
+            ctx.globalAlpha = drop.alpha;
+
+            const grad = ctx.createLinearGradient(0, -s, 0, s);
+            grad.addColorStop(0, '#FFF1F5');
+            grad.addColorStop(0.55, drop.tint);
+            grad.addColorStop(1, '#EC4899');
+
+            ctx.fillStyle = grad;
+            ctx.shadowColor = 'rgba(236, 72, 153, 0.55)';
+            ctx.shadowBlur = 8;
+
+            ctx.beginPath();
+            ctx.moveTo(0, s);
+            ctx.bezierCurveTo(-s * 0.95, s * 0.35, -s * 0.85, -s * 0.75, -s * 0.22, -s);
+            ctx.lineTo(0, -s * 0.68);
+            ctx.lineTo(s * 0.22, -s);
+            ctx.bezierCurveTo(s * 0.85, -s * 0.75, s * 0.95, s * 0.35, 0, s);
+            ctx.closePath();
+            ctx.fill();
+            ctx.restore();
+        }
+
+        function drawTwinCherry(ctx, drop) {
+            const s = drop.size;
+            ctx.save();
+            ctx.translate(drop.x, drop.y);
+            ctx.rotate(Math.sin(drop.rotation) * 0.35);
+            ctx.globalAlpha = drop.alpha;
+
+            // Cuống cherry mảnh ánh vàng hồng
+            ctx.strokeStyle = 'rgba(253, 186, 116, 0.85)';
+            ctx.lineWidth = 1.25;
+            ctx.beginPath();
+            ctx.moveTo(-s * 0.42, s * 0.35);
+            ctx.quadraticCurveTo(-s * 0.15, -s * 0.65, s * 0.08, -s * 1.05);
+            ctx.quadraticCurveTo(s * 0.35, -s * 0.55, s * 0.48, s * 0.45);
+            ctx.stroke();
+
+            // Chiếc lá nhỏ trên cuống
+            ctx.fillStyle = 'rgba(244, 114, 182, 0.85)';
+            ctx.beginPath();
+            ctx.ellipse(s * 0.28, -s * 0.95, s * 0.34, s * 0.15, -0.35, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Hai quả cherry căng mọng phát sáng
+            const berries = [
+                { bx: -s * 0.44, by: s * 0.45, r: s * 0.42 },
+                { bx: s * 0.46, by: s * 0.56, r: s * 0.40 }
+            ];
+
+            berries.forEach(b => {
+                const bg = ctx.createRadialGradient(b.bx - b.r * 0.3, b.by - b.r * 0.3, b.r * 0.1, b.bx, b.by, b.r);
+                bg.addColorStop(0, '#FDA4AF');
+                bg.addColorStop(0.45, '#E11D48');
+                bg.addColorStop(1, '#881337');
+
+                ctx.fillStyle = bg;
+                ctx.shadowColor = 'rgba(244, 63, 94, 0.75)';
+                ctx.shadowBlur = 10;
+                ctx.beginPath();
+                ctx.arc(b.bx, b.by, b.r, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Điểm sáng bóng trên trái cherry
+                ctx.shadowBlur = 0;
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
+                ctx.beginPath();
+                ctx.arc(b.bx - b.r * 0.32, b.by - b.r * 0.32, b.r * 0.22, 0, Math.PI * 2);
+                ctx.fill();
+            });
+
+            ctx.restore();
+        }
+
+        function updateAndRenderCherryRain(now, frameStep) {
+            if (!cherryCtx || !cherryRainCanvas) return;
+            cherryCtx.clearRect(0, 0, cherryRainCanvas.width, cherryRainCanvas.height);
+
+            const w = cherryRainCanvas.width;
+            const h = cherryRainCanvas.height;
+
+            for (let i = 0; i < cherryDrops.length; i++) {
+                const d = cherryDrops[i];
+                d.y += d.speedY * frameStep * 1.45;
+                d.x += Math.sin(now * d.swaySpeed + d.phase) * 0.65 * frameStep;
+                d.rotation += d.rotSpeed * frameStep;
+                d.flipPhase += d.flipSpeed * frameStep;
+
+                if (d.y > h + 30) {
+                    cherryDrops[i] = createCherryDrop(false);
+                    continue;
+                }
+                if (d.x < -30) d.x = w + 25;
+                if (d.x > w + 30) d.x = -25;
+
+                if (d.isTwinCherry) drawTwinCherry(cherryCtx, d);
+                else drawCherryPetal(cherryCtx, d);
+            }
+        }
 
         function initGalaxy2DEngine() {
             resize();
             createSpaceGalaxyData();
+            initCherryRain();
             if (!galaxyAnimId) {
                 lastGalaxyFrame = 0;
                 galaxyAnimId = requestAnimationFrame(animateGalaxy2DEngine);
@@ -2950,7 +3191,7 @@
                 spaceParticles.push({ x, y, z, size: Math.random() * 1.7 + .35, twinkle: Math.random()*Math.PI*2, color: i < 500 ? (Math.random()>.18?'#FB7185':'#ffffff') : (Math.random() > 0.58 ? '#F9A8D4' : '#ffffff') });
             }
 
-            // Hiển thị đủ toàn bộ 19 ảnh + 2 video (21 đèn lồng)
+            // Hiển thị toàn bộ 17 ảnh + 2 video (19 đèn lồng)
             mediaItems.forEach((item, i) => {
                 const frame = document.createElement('div');
                 frame.className = 'photo-frame lantern-frame';
@@ -2998,7 +3239,6 @@
 
                 photosWrapper.appendChild(frame);
 
-                // Đặt 2 lồng đèn video ở vị trí nổi bật ngay trên màn hình khi vừa mở dải ngân hà
                 const initX = item.type === 'video'
                     ? (item.id === 1 ? 0.22 : 0.78)
                     : (((i + 0.5) / mediaItems.length) * 0.88 + 0.06 + (Math.random() - 0.5) * 0.04);
@@ -3112,6 +3352,10 @@
 
             const frameStep = Math.min(2, Math.max(.6, (now - (lastLanternFrame || now - 32)) / 32));
             lastLanternFrame = now;
+
+            // Cập nhật & vẽ hiệu ứng mưa Cherry
+            updateAndRenderCherryRain(now, frameStep);
+
             galaxyPhotoElements.forEach(p => {
                 if (p.isVideo && p.smartVidState && p.smartVidState.status === 'ready') {
                     const v = p.smartVidState.el;
@@ -3137,31 +3381,6 @@
                 p.el.style.opacity = alpha.toFixed(2);
                 p.el.style.zIndex = String(Math.round(500 - p.depth));
             });
-        }
-
-        // ===== SHOOTING STAR EASTER EGG =====
-        const shootingStarMessages = [
-            'Mong cậu luôn hạnh phúc',
-            'Mong mọi khoảnh khắc của cậu đều tỏa sáng',
-            'Chúc mừng sinh nhật ♡',
-            'Cậu xứng đáng với những điều tuyệt vời nhất.',
-            'Hãy luôn tỏa sáng theo cách của cậu',
-            'Mong mọi điều ước của cậu thành hiện thực ✦'
-        ];
-
-        function spawnShootingStarThầnTốc() {
-            if (currentState !== 'GALAXY') return;
-            const star = document.createElement('div');
-            star.className = 'shooting-star';
-            star.innerText = shootingStarMessages[Math.floor(Math.random() * shootingStarMessages.length)];
-            star.style.top = (12 + Math.random() * 62) + 'vh';
-            const duration = 1.9 + Math.random() * 1.1;
-            star.style.animationDuration = duration + 's';
-            star.style.fontSize = (14 + Math.random() * 7) + 'px';
-            star.style.opacity = '.72';
-            document.getElementById('galaxy-container').appendChild(star);
-            setTimeout(() => star.remove(), duration * 1000 + 150);
-            setTimeout(spawnShootingStarThầnTốc, 18000 + Math.random() * 16000);
         }
 
         // ===== MINI NAVIGATION + WISH SYSTEM =====
@@ -3206,6 +3425,25 @@
 
                     if (target === 'wishes') {
                         openWish();
+                        return;
+                    }
+
+                    if (target === 'message') {
+                        const charContainer = document.getElementById('chat-character-container');
+                        const chatBox = document.getElementById('chat-box');
+                        const chatInput = document.getElementById('chat-input');
+                        if (charContainer) {
+                            charContainer.style.display = 'flex';
+                            charContainer.style.opacity = '1';
+                        }
+                        if (chatBox) {
+                            const isOpen = chatBox.style.display === 'block';
+                            chatBox.style.display = isOpen ? 'none' : 'block';
+                            if (!isOpen && chatInput) {
+                                setTimeout(() => chatInput.focus(), 60);
+                            }
+                        }
+                        setActive('message');
                         return;
                     }
 
@@ -3255,6 +3493,11 @@
                 wishUserText.textContent = '“' + wish + '”';
                 wishOverlay.classList.add('wishing');
 
+                // Lưu điều ước lên Firebase
+                saveMessageToFirebase(wish, 'wish').catch(err => {
+                    console.error('Lỗi lưu điều ước lên Firebase:', err);
+                });
+
                 setTimeout(() => wishResult.classList.add('show'), 1200);
                 setTimeout(() => {
                     const galaxy = document.getElementById('galaxy-container');
@@ -3294,9 +3537,10 @@
 
             const applyGalaxyZoom = () => {
                 const canvas = document.getElementById('spaceCanvas');
+                const cherryCanvas = document.getElementById('cherryRainCanvas');
                 const photos = document.getElementById('photos-wrapper');
                 const center = document.getElementById('galaxy-centerpiece');
-                [canvas, photos, center].forEach(el => {
+                [canvas, cherryCanvas, photos, center].forEach(el => {
                     if (el) el.style.scale = galaxyZoom;
                 });
             };
@@ -3386,7 +3630,6 @@
             const btnPrev = document.getElementById('prev-page'),
                   btnNext = document.getElementById('next-page');
 
-            // 8 mặt trang đơn cho điện thoại (0 -> 7)
             const singlePages = [
                 p1.querySelector('.front'),
                 p1.querySelector('.back'),
@@ -3398,9 +3641,9 @@
                 p4.querySelector('.back')
             ];
 
-            let currentPage = 1; // Cho chế độ 2 trang PC (1..5)
+            let currentPage = 1;
             const maxPages = 5;
-            let mobilePageIdx = 0; // Cho chế độ 1 trang điện thoại (0..7)
+            let mobilePageIdx = 0;
 
             const isMobileBook = () => window.innerWidth <= 768;
 
@@ -3478,23 +3721,87 @@
             renderBookState();
         }
 
+        function escapeHtml(str) {
+            return str.replace(/[&<>"']/g, m => ({
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#39;'
+            }[m]));
+        }
+
         function setupChatEvents() {
-            const chatBox = document.getElementById('chat-box'), chatMessages = document.getElementById('chat-messages'), chatInput = document.getElementById('chat-input');
-            document.getElementById('chat-avatar').onclick = () => { chatBox.style.display = (chatBox.style.display === 'block') ? 'none' : 'block'; };
-            const botReplies = ["Hihi, ngân hà đẹp quá ta! 🥰", "Cậu thử bấm vào mấy chiếc lồng đèn xem!", "Cảm ơn cậu vì món quà nha! 💖", "Mưa sao băng lung linh quá! ✨"];
-            function sendMessage() {
-                const text = chatInput.value.trim();
-                if (text !== "") {
-                    chatMessages.innerHTML += `<p class="msg-user"><strong>Bạn:</strong> ${text}</p>`;
-                    chatInput.value = ''; chatMessages.scrollTop = chatMessages.scrollHeight;
-                    setTimeout(() => {
-                        chatMessages.innerHTML += `<p class="msg-bot"><strong>Quỳnh:</strong> ${botReplies[Math.floor(Math.random() * botReplies.length)]}</p>`;
-                        chatMessages.scrollTop = chatMessages.scrollHeight;
-                    }, 1000);
-                }
+            const chatBox = document.getElementById('chat-box');
+            const chatMessages = document.getElementById('chat-messages');
+            const chatInput = document.getElementById('chat-input');
+            const chatSendBtn = document.getElementById('chat-send');
+            const chatCloseBtn = document.getElementById('chat-close-btn');
+
+            document.getElementById('chat-avatar').onclick = () => {
+                chatBox.style.display = (chatBox.style.display === 'block') ? 'none' : 'block';
+                if (chatBox.style.display === 'block') chatInput.focus();
+            };
+
+            if (chatCloseBtn) {
+                chatCloseBtn.onclick = () => {
+                    chatBox.style.display = 'none';
+                };
             }
-            document.getElementById('chat-send').onclick = sendMessage;
-            chatInput.addEventListener("keypress", (e) => { if (e.key === "Enter") { e.preventDefault(); sendMessage(); } });
+
+            const botReplies = [
+                "Hihi, ngân hà đẹp quá ta! 🥰",
+                "Cậu thử bấm vào mấy chiếc lồng đèn xem!",
+                "Cảm ơn cậu vì món quà nha! 💖",
+                "Mưa cherry lung linh quá! 🌸🍒"
+            ];
+
+            async function sendMessage() {
+                const text = chatInput.value.trim();
+                if (text === "") return;
+
+                const msgEl = document.createElement('p');
+                msgEl.className = 'msg-user';
+                msgEl.innerHTML = `<strong>Bạn:</strong> ${escapeHtml(text)}<span class="msg-sync-status">Đang gửi...</span>`;
+                chatMessages.appendChild(msgEl);
+
+                const statusEl = msgEl.querySelector('.msg-sync-status');
+                chatInput.value = '';
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+                chatSendBtn.disabled = true;
+
+                try {
+                    await saveMessageToFirebase(text, 'chat_message');
+                    if (statusEl) {
+                        statusEl.textContent = '✓ Đã gửi';
+                        statusEl.classList.add('sent');
+                    }
+                } catch (err) {
+                    console.error('Lỗi gửi tin nhắn lên Firebase:', err);
+                    if (statusEl) {
+                        statusEl.textContent = '⚠ Chưa gửi được lên máy chủ';
+                        statusEl.classList.add('error');
+                    }
+                } finally {
+                    chatSendBtn.disabled = false;
+                }
+
+                setTimeout(() => {
+                    const botEl = document.createElement('p');
+                    botEl.className = 'msg-bot';
+                    botEl.innerHTML = `<strong>Quỳnh:</strong> ${botReplies[Math.floor(Math.random() * botReplies.length)]}`;
+                    chatMessages.appendChild(botEl);
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                }, 900);
+            }
+
+            chatSendBtn.onclick = sendMessage;
+            chatInput.addEventListener("keypress", (e) => {
+                if (e.key === "Enter") {
+                    e.preventDefault();
+                    sendMessage();
+                }
+            });
         }
 
         function resize() {
@@ -3502,7 +3809,12 @@
                 sphereRenderer.setSize(window.innerWidth, window.innerHeight);
                 if (sphereCamera) { sphereCamera.aspect = window.innerWidth / window.innerHeight; sphereCamera.updateProjectionMatrix(); }
             }
-            spaceCanvas.width = window.innerWidth; spaceCanvas.height = window.innerHeight;
+            spaceCanvas.width = window.innerWidth;
+            spaceCanvas.height = window.innerHeight;
+            if (cherryRainCanvas) {
+                cherryRainCanvas.width = window.innerWidth;
+                cherryRainCanvas.height = window.innerHeight;
+            }
             if (currentState === 'COUNTDOWN') {
                 matrixCanvas.width = window.innerWidth;
                 matrixCanvas.height = window.innerHeight;
