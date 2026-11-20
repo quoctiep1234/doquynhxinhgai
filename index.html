@@ -2152,6 +2152,7 @@
         setLuxuryChapter('gate');
 
         // ===== UNIVERSE LOADING =====
+// ===== UNIVERSE LOADING =====
 const universeLoading = document.getElementById('universe-loading');
 const loadingMessage = document.getElementById('loading-message');
 const loadingStars = document.getElementById('loading-stars');
@@ -2162,10 +2163,6 @@ const loadingMessages = [
     'Hy vọng cậu sẽ thích món quà nhỏ này. ❤️'
 ];
 
-// Thời gian đọc riêng cho từng câu (ms) - câu dài để lâu hơn
-const messageDurations = [4500, 3800, 3800];
-
-// Tránh tạo trùng sao nếu script chạy lại
 if (loadingStars && loadingStars.children.length === 0) {
     for (let i = 0; i < 95; i++) {
         const star = document.createElement('div');
@@ -2187,45 +2184,40 @@ if (loadingStars && loadingStars.children.length === 0) {
     }
 }
 
-// Hủy timer cũ nếu đoạn code vô tình được gọi lại lần 2
-if (window._loadingMsgTimer) {
-    clearTimeout(window._loadingMsgTimer);
+// Xóa timer cũ nếu script vô tình chạy lại
+if (window._loadingTimers) {
+    window._loadingTimers.forEach(clearTimeout);
 }
+window._loadingTimers = [];
 
-let loadingMessageIndex = 0;
+const FADE_DURATION = 320; // thời gian hiệu ứng mờ chữ (ms)
+const STEP_DURATION = 3000; // mỗi câu đúng 3s -> 3 câu = 9s
 
 if (loadingMessage) {
+    // 0s -> 3s: Hiện câu 1
     loadingMessage.textContent = loadingMessages[0];
     loadingMessage.classList.remove('message-changing');
-}
 
-function showNextLoadingMessage() {
-    if (!loadingMessage || !universeLoading || universeLoading.classList.contains('loading-complete')) {
-        return;
+    // Lên lịch chuẩn từng mốc 3s (3000ms) và 6s (6000ms)
+    for (let i = 1; i < loadingMessages.length; i++) {
+        const switchTime = i * STEP_DURATION;
+
+        // Mờ chữ trước 320ms để đúng mốc 3s / 6s là chữ mới hiện ra
+        const fadeTimer = setTimeout(() => {
+            if (!universeLoading || universeLoading.classList.contains('loading-complete')) return;
+            loadingMessage.classList.add('message-changing');
+        }, switchTime - FADE_DURATION);
+
+        // Đổi sang câu tiếp theo đúng mốc 3s / 6s
+        const textTimer = setTimeout(() => {
+            if (!universeLoading || universeLoading.classList.contains('loading-complete')) return;
+            loadingMessage.textContent = loadingMessages[i];
+            loadingMessage.classList.remove('message-changing');
+        }, switchTime);
+
+        window._loadingTimers.push(fadeTimer, textTimer);
     }
-
-    // Dừng ở câu 3 để giữ lời chúc trên màn hình, không nhảy ngược về câu 1
-    if (loadingMessageIndex >= loadingMessages.length - 1) {
-        return;
-    }
-
-    loadingMessage.classList.add('message-changing');
-
-    window._loadingMsgTimer = setTimeout(() => {
-        loadingMessageIndex++;
-        loadingMessage.textContent = loadingMessages[loadingMessageIndex];
-        loadingMessage.classList.remove('message-changing');
-
-        // Chỉ bắt đầu đếm giờ cho câu kế tiếp sau khi câu này đã hiện ra
-        window._loadingMsgTimer = setTimeout(
-            showNextLoadingMessage,
-            messageDurations[loadingMessageIndex]
-        );
-    }, 320);
 }
-
-// Bắt đầu đếm giờ cho câu đầu tiên
-window._loadingMsgTimer = setTimeout(showNextLoadingMessage, messageDurations[0]);
 
         // ===== PREMIUM UNIVERSE GATE =====
         const CORRECT_DAY = 23, CORRECT_MONTH = 11, CORRECT_YEAR = 2004;
