@@ -1840,6 +1840,7 @@
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-analytics-compat.js"></script>
 </head>
@@ -2127,6 +2128,224 @@
             }
             if (tasks.length > 0) {
                 await Promise.all(tasks);
+            }
+        }
+
+
+        // ===== VISITOR TRACKING (Firebase Realtime Database) =====
+        // Trang khách: tự ghi nhận một lượt truy cập trong mỗi tab.
+        // Trang quản trị: mở website với ?admin=1, đăng nhập Firebase để xem realtime.
+        const VISITOR_LOG_PATH = 'visitorLogs';
+        const isVisitorAdminPage = new URLSearchParams(window.location.search).get('admin') === '1';
+
+        function detectVisitorDevice() {
+            const ua = navigator.userAgent || '';
+            if (/tablet|ipad/i.test(ua)) return 'Tablet';
+            if (/mobile|android|iphone/i.test(ua)) return 'Điện thoại';
+            return 'Máy tính';
+        }
+
+        function detectVisitorBrowser() {
+            const ua = navigator.userAgent || '';
+            if (/Edg\//.test(ua)) return 'Microsoft Edge';
+            if (/Chrome\//.test(ua) && !/Edg\//.test(ua)) return 'Google Chrome';
+            if (/Firefox\//.test(ua)) return 'Mozilla Firefox';
+            if (/Safari\//.test(ua) && !/Chrome\//.test(ua)) return 'Safari';
+            return 'Trình duyệt khác';
+        }
+
+        async function recordWebsiteVisit() {
+            if (!firebaseRtdb || isVisitorAdminPage) return;
+
+            // Tránh ghi lặp khi người dùng tải lại cùng một tab trong phiên hiện tại.
+            try {
+                if (sessionStorage.getItem('quynh_visit_recorded') === '1') return;
+            } catch (e) {}
+
+            try {
+                // Dịch vụ IP chỉ trả về IP công khai và vị trí địa lý gần đúng.
+                const response = await fetch('https://ipapi.co/json/', { cache: 'no-store' });
+                if (!response.ok) throw new Error('Không lấy được thông tin IP');
+                const geo = await response.json();
+
+                const visit = {
+                    ip: String(geo.ip || 'Không xác định').slice(0, 64),
+                    city: String(geo.city || 'Không xác định').slice(0, 100),
+                    region: String(geo.region || '').slice(0, 100),
+                    country: String(geo.country_name || '').slice(0, 100),
+                    device: detectVisitorDevice(),
+                    browser: detectVisitorBrowser(),
+                    page: window.location.pathname.slice(0, 200),
+                    userAgent: (navigator.userAgent || '').slice(0, 300),
+                    timestamp: firebase.database.ServerValue.TIMESTAMP
+                };
+
+                await firebaseRtdb.ref(VISITOR_LOG_PATH).push(visit);
+                try { sessionStorage.setItem('quynh_visit_recorded', '1'); } catch (e) {}
+            } catch (error) {
+                console.warn('Không thể ghi nhận lượt truy cập:', error);
+            }
+        }
+
+        function createVisitorAdminPanel() {
+            if (!isVisitorAdminPage || document.getElementById('visitor-admin-panel')) return;
+
+            const style = document.createElement('style');
+            style.textContent = `
+                #visitor-admin-panel{position:fixed;inset:0;z-index:100500;background:rgba(5,3,10,.97);color:#fff;
+                    font-family:Segoe UI,Tahoma,sans-serif;overflow:auto;padding:24px}
+                #visitor-admin-panel *{box-sizing:border-box}
+                .va-wrap{max-width:1100px;margin:30px auto}
+                .va-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:22px}
+                .va-title{font-size:clamp(22px,4vw,32px);color:#ff9acb}
+                .va-sub{color:#b9a9bd;font-size:13px;margin-top:6px}
+                .va-card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:18px;margin-bottom:16px}
+                .va-form{display:flex;gap:10px;flex-wrap:wrap}
+                .va-form input{flex:1;min-width:190px;padding:13px 14px;border-radius:10px;border:1px solid #67415f;background:#160d20;color:#fff}
+                .va-btn{border:0;border-radius:10px;padding:12px 18px;background:linear-gradient(90deg,#be3f91,#743bd0);color:white;font-weight:600;cursor:pointer}
+                .va-btn.secondary{background:#392640}
+                .va-status{color:#f9a8d4;font-size:13px;margin-top:12px;min-height:18px}
+                .va-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:16px 0}
+                .va-stat{background:rgba(236,72,153,.09);border:1px solid rgba(236,72,153,.2);padding:16px;border-radius:14px}
+                .va-stat b{display:block;font-size:25px;color:#ffacd2;margin-top:5px}
+                .va-table-wrap{overflow:auto}
+                .va-table{width:100%;border-collapse:collapse;min-width:760px;font-size:13px}
+                .va-table th,.va-table td{text-align:left;padding:12px 10px;border-bottom:1px solid rgba(255,255,255,.09);vertical-align:top}
+                .va-table th{color:#ffacd2;font-weight:600}
+                .va-table td{color:#eee}
+                .va-empty{color:#b9a9bd;text-align:center;padding:24px}
+                .va-live{display:inline-flex;align-items:center;gap:7px;color:#86efac;font-size:12px}
+                .va-dot{width:8px;height:8px;border-radius:50%;background:#4ade80;box-shadow:0 0 10px #4ade80}
+                @media(max-width:600px){#visitor-admin-panel{padding:14px}.va-wrap{margin:12px auto}.va-card{padding:14px}}
+            `;
+            document.head.appendChild(style);
+
+            const panel = document.createElement('section');
+            panel.id = 'visitor-admin-panel';
+            panel.innerHTML = `
+                <div class="va-wrap">
+                    <div class="va-head">
+                        <div><div class="va-title">✦ QUỲNH'S UNIVERSE · VISITOR LIVE</div>
+                        <div class="va-sub">Bảng theo dõi lượt truy cập website sinh nhật</div></div>
+                        <button class="va-btn secondary" id="va-close">Đóng trang quản trị</button>
+                    </div>
+                    <div class="va-card" id="va-login-card">
+                        <h3 style="margin-bottom:14px">Đăng nhập quản trị Firebase</h3>
+                        <form class="va-form" id="va-login-form">
+                            <input id="va-email" type="email" placeholder="Email quản trị Firebase" autocomplete="username" required>
+                            <input id="va-password" type="password" placeholder="Mật khẩu" autocomplete="current-password" required>
+                            <button class="va-btn" type="submit">Đăng nhập</button>
+                        </form>
+                        <div class="va-status" id="va-login-status">Dùng tài khoản Email/Password đã tạo trong Firebase Authentication.</div>
+                    </div>
+                    <div id="va-dashboard" style="display:none">
+                        <div class="va-card">
+                            <div class="va-live"><span class="va-dot"></span> Đang nghe dữ liệu realtime</div>
+                            <div class="va-stats">
+                                <div class="va-stat">Tổng lượt ghi nhận<b id="va-total">0</b></div>
+                                <div class="va-stat">Lượt gần nhất<b id="va-latest">—</b></div>
+                            </div>
+                            <div class="va-sub">Danh sách 50 lượt truy cập mới nhất. Một tab chỉ ghi nhận một lượt trong một phiên.</div>
+                        </div>
+                        <div class="va-card">
+                            <div class="va-table-wrap">
+                                <table class="va-table">
+                                    <thead><tr><th>Thời gian</th><th>IP</th><th>Vị trí gần đúng</th><th>Thiết bị</th><th>Trình duyệt</th><th>Trang</th></tr></thead>
+                                    <tbody id="va-rows"><tr><td colspan="6" class="va-empty">Đang tải dữ liệu...</td></tr></tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <button class="va-btn secondary" id="va-logout">Đăng xuất</button>
+                    </div>
+                </div>`;
+            document.body.appendChild(panel);
+
+            let visitsRef = null;
+            const loginStatus = panel.querySelector('#va-login-status');
+            const dashboard = panel.querySelector('#va-dashboard');
+            const loginCard = panel.querySelector('#va-login-card');
+
+            function formatVisitTime(timestamp) {
+                if (!timestamp) return 'Đang cập nhật';
+                return new Date(timestamp).toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' });
+            }
+
+            function showVisits(snapshot) {
+                const rows = [];
+                snapshot.forEach(child => rows.push({ id: child.key, ...child.val() }));
+                rows.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+                panel.querySelector('#va-total').textContent = rows.length;
+                panel.querySelector('#va-latest').textContent = rows.length ? formatVisitTime(rows[0].timestamp) : '—';
+                const tbody = panel.querySelector('#va-rows');
+                tbody.innerHTML = '';
+                if (!rows.length) {
+                    tbody.innerHTML = '<tr><td colspan="6" class="va-empty">Chưa có lượt truy cập nào.</td></tr>';
+                    return;
+                }
+                rows.forEach(v => {
+                    const tr = document.createElement('tr');
+                    const values = [
+                        formatVisitTime(v.timestamp), v.ip || '—',
+                        [v.city, v.region, v.country].filter(Boolean).join(', ') || '—',
+                        v.device || '—', v.browser || '—', v.page || '—'
+                    ];
+                    values.forEach(value => {
+                        const td = document.createElement('td');
+                        td.textContent = value;
+                        tr.appendChild(td);
+                    });
+                    tbody.appendChild(tr);
+                });
+            }
+
+            async function startAdminSession(user) {
+                loginCard.style.display = 'none';
+                dashboard.style.display = 'block';
+                if (visitsRef) visitsRef.off();
+                visitsRef = firebaseRtdb.ref(VISITOR_LOG_PATH).limitToLast(50);
+                visitsRef.on('value', showVisits, error => {
+                    loginStatus.textContent = 'Không đọc được dữ liệu: ' + error.message + '. Kiểm tra Firebase Realtime Database Rules.';
+                });
+            }
+
+            panel.querySelector('#va-login-form').addEventListener('submit', async event => {
+                event.preventDefault();
+                if (!window.firebase || !firebaseRtdb || !firebase.auth) {
+                    loginStatus.textContent = 'Firebase chưa khởi tạo thành công.';
+                    return;
+                }
+                loginStatus.textContent = 'Đang đăng nhập...';
+                try {
+                    const email = panel.querySelector('#va-email').value.trim();
+                    const password = panel.querySelector('#va-password').value;
+                    const credential = await firebase.auth().signInWithEmailAndPassword(email, password);
+                    await startAdminSession(credential.user);
+                } catch (error) {
+                    loginStatus.textContent = 'Đăng nhập thất bại: ' + error.message;
+                }
+            });
+
+            panel.querySelector('#va-logout').addEventListener('click', async () => {
+                if (visitsRef) visitsRef.off();
+                await firebase.auth().signOut();
+                dashboard.style.display = 'none';
+                loginCard.style.display = 'block';
+                loginStatus.textContent = 'Đã đăng xuất.';
+            });
+            panel.querySelector('#va-close').addEventListener('click', () => {
+                if (visitsRef) visitsRef.off();
+                window.location.href = window.location.pathname;
+            });
+        }
+
+        if (isVisitorAdminPage) {
+            document.addEventListener('DOMContentLoaded', createVisitorAdminPanel);
+        } else {
+            // Đợi Firebase khởi tạo và DOM sẵn sàng.
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', recordWebsiteVisit, { once: true });
+            } else {
+                recordWebsiteVisit();
             }
         }
 
