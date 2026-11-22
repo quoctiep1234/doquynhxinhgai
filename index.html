@@ -2155,35 +2155,43 @@
         }
 
         async function recordWebsiteVisit() {
-            if (!firebaseRtdb || isVisitorAdminPage) return;
+            if (!firebaseRtdb || isVisitorAdminPage) {
+                if (!firebaseRtdb) console.error('Không ghi được lượt truy cập: Firebase Realtime Database chưa khởi tạo.');
+                return;
+            }
 
-            // Tránh ghi lặp khi người dùng tải lại cùng một tab trong phiên hiện tại.
+            // Chỉ ghi một lượt trong mỗi tab/phiên, tránh tăng lượt khi tải lại trang.
             try {
                 if (sessionStorage.getItem('quynh_visit_recorded') === '1') return;
             } catch (e) {}
 
+            // Không để dịch vụ tra cứu IP làm gián đoạn việc ghi lượt truy cập.
+            let geo = {};
             try {
-                // Dịch vụ IP chỉ trả về IP công khai và vị trí địa lý gần đúng.
                 const response = await fetch('https://ipapi.co/json/', { cache: 'no-store' });
-                if (!response.ok) throw new Error('Không lấy được thông tin IP');
-                const geo = await response.json();
+                if (response.ok) geo = await response.json();
+            } catch (ipError) {
+                console.warn('Không lấy được IP/vị trí; vẫn tiếp tục ghi lượt truy cập:', ipError);
+            }
 
-                const visit = {
-                    ip: String(geo.ip || 'Không xác định').slice(0, 64),
-                    city: String(geo.city || 'Không xác định').slice(0, 100),
-                    region: String(geo.region || '').slice(0, 100),
-                    country: String(geo.country_name || '').slice(0, 100),
-                    device: detectVisitorDevice(),
-                    browser: detectVisitorBrowser(),
-                    page: window.location.pathname.slice(0, 200),
-                    userAgent: (navigator.userAgent || '').slice(0, 300),
-                    timestamp: firebase.database.ServerValue.TIMESTAMP
-                };
+            const visit = {
+                ip: String(geo.ip || 'Không xác định').slice(0, 64),
+                city: String(geo.city || 'Không xác định').slice(0, 100),
+                region: String(geo.region || '').slice(0, 100),
+                country: String(geo.country_name || '').slice(0, 100),
+                device: detectVisitorDevice(),
+                browser: detectVisitorBrowser(),
+                page: window.location.pathname.slice(0, 200),
+                userAgent: (navigator.userAgent || '').slice(0, 300),
+                timestamp: firebase.database.ServerValue.TIMESTAMP
+            };
 
+            try {
                 await firebaseRtdb.ref(VISITOR_LOG_PATH).push(visit);
                 try { sessionStorage.setItem('quynh_visit_recorded', '1'); } catch (e) {}
+                console.info('Đã ghi nhận lượt truy cập website.');
             } catch (error) {
-                console.warn('Không thể ghi nhận lượt truy cập:', error);
+                console.error('Không thể ghi nhận lượt truy cập vào Firebase:', error);
             }
         }
 
