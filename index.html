@@ -2165,26 +2165,73 @@
                 if (sessionStorage.getItem('quynh_visit_recorded') === '1') return;
             } catch (e) {}
 
-            // Giữ cách lấy IP ổn định của bản cũ: chỉ gọi ipapi.co một lần.
-            // Có giới hạn thời gian để dịch vụ IP không thể giữ lượt truy cập quá lâu.
+            // Lấy IP/vị trí với tổng thời gian tối đa 8 giây.
+            // Thử ipapi.co trước, sau đó ipwho.is; cuối cùng ipify chỉ lấy IP.
+            // Nếu tất cả dịch vụ lỗi/hết giờ, vẫn ghi lượt truy cập với IP không xác định.
             let geo = {};
-            try {
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 2500);
-                try {
-                    const response = await fetch('https://ipapi.co/json/', {
-                        cache: 'no-store',
-                        signal: controller.signal
-                    });
-                    if (response.ok) {
-                        const data = await response.json();
-                        if (data && data.ip) geo = data;
+            const lookupVisitorGeo = async () => {
+                const providers = [
+                    {
+                        url: 'https://ipapi.co/json/',
+                        parse: (data) => data && data.ip ? {
+                            ip: data.ip,
+                            city: data.city,
+                            region: data.region,
+                            country_name: data.country_name
+                        } : null
+                    },
+                    {
+                        url: 'https://ipwho.is/',
+                        parse: (data) => data && data.success !== false && data.ip ? {
+                            ip: data.ip,
+                            city: data.city,
+                            region: data.region,
+                            country_name: data.country
+                        } : null
+                    },
+                    {
+                        url: 'https://api.ipify.org?format=json',
+                        parse: (data) => data && data.ip ? { ip: data.ip } : null
                     }
-                } finally {
-                    clearTimeout(timeoutId);
+                ];
+
+                const startedAt = Date.now();
+                for (const provider of providers) {
+                    const remaining = 8000 - (Date.now() - startedAt);
+                    if (remaining <= 0) break;
+
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), remaining);
+                    try {
+                        const response = await fetch(provider.url, {
+                            cache: 'no-store',
+                            mode: 'cors',
+                            signal: controller.signal
+                        });
+                        if (!response.ok) continue;
+
+                        const data = await response.json();
+                        const parsed = provider.parse(data);
+                        if (parsed && parsed.ip) return parsed;
+                    } catch (providerError) {
+                        console.warn('Dịch vụ lấy IP không phản hồi:', provider.url, providerError);
+                    } finally {
+                        clearTimeout(timeoutId);
+                    }
                 }
+                return {};
+            };
+
+            try {
+                // Promise.race bảo đảm bước tra cứu không chờ quá 8 giây,
+                // kể cả khi trình duyệt/nhà mạng không xử lý AbortController đúng hạn.
+                geo = await Promise.race([
+                    lookupVisitorGeo(),
+                    new Promise(resolve => setTimeout(() => resolve({}), 8000))
+                ]);
             } catch (ipError) {
                 console.warn('Không lấy được IP/vị trí; vẫn tiếp tục ghi lượt truy cập:', ipError);
+                geo = {};
             }
 
             const visit = {
